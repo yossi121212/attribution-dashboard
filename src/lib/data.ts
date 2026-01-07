@@ -828,6 +828,52 @@ export const sampleUsers: UserProfile[] = [
       howAttributed: 'Attributed via post-click within the 30-day window.',
     },
   },
+  {
+    sdkStrongId: '2a03ac2b2498c0bf25d617a9970fa98789d1bbdc606ec9d313dbbdd3',
+    metawinUserId: 'c7cdb78d-d653-4c31-a42a-8db9c5902f3e',
+    metawinUserIdFirstTime: '2025-12-05 00:00:00.000000 UTC',
+    metawinUserIdFirstFtd: '2025-12-05 00:00:00.000000 UTC',
+    firstTimeSeen: '2025-10-12 00:00:00.000000 UTC',
+    firstTimeFtd: '2025-12-05 00:00:00.000000 UTC',
+    firstTimeAttributedFtd: '2025-12-05 00:00:00.000000 UTC',
+    firstTimeAttributed: '2025-11-08 00:00:00.000000 UTC',
+    daysVisitBeforeBeingAttributed: 2,
+    totalAttributedFtd: 1,
+    totalAttributedFtdValue: 0.597366318,
+    totalAttributedPurchase: 1,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-11-05 00:00:00.000', domain: 'dailymotion.com', count: 1 }
+    ],
+    banners: '300x250.png',
+    dailyClicks: 0,
+    allWallets: '0x22f5ba98dcee0348b22bcc2e2cf8d0ea11cbe5e2',
+    primaryCountry: 'PH',
+    balanceGroup: '<$1k',
+    walletProviders: 'Metamask',
+    timeline: [
+      { date: '2025-10-12', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-05', type: 'impression', description: 'Ad impression', source: 'Dailymotion' },
+      { date: '2025-12-05', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-11-05', format: '300×250', publisher: 'Dailymotion', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A user from the Philippines.',
+      beforeAds: 'First visited Oct 12.',
+      adExposure: 'Saw ad on Nov 5.',
+      afterAds: 'Converted Dec 5.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
 ];
 
 // Get all users

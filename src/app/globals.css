@@ -152,6 +152,52 @@
   animation-name: slide-in-from-bottom;
 }
 
+/* Timeline scroll reveal animation */
+@keyframes timeline-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes line-grow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.timeline-item {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.timeline-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.timeline-line {
+  transform-origin: top;
+  transform: scaleY(0);
+  transition: transform 0.3s ease-out 0.1s;
+}
+
+.timeline-item.revealed .timeline-line {
+  transform: scaleY(1);
+}
+
 /* Focus styles */
 input:focus,
 button:focus-visible {
@@ -166,4 +212,9 @@ button:focus-visible {
 .hover-lift:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom card shadow */
+.card-shadow {
+  box-shadow: 0 0 20px 0 rgba(219, 219, 219, 0.50) !important;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { getAllUsers, UserProfile } from '@/lib/data';
 import { WalletIcon } from '@/components/wallet-icons';
 import { generateUserStory } from '@/lib/story-generator';
@@ -89,6 +89,15 @@ export default function ExplainableDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Experimental Prototype Banner */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-5xl mx-auto px-6 py-2 text-center">
+          <p className="text-xs text-gray-300">
+            <span className="font-medium text-gray-100">Note:</span> This is an Experimental Prototype using live data - Not a planned feature or commitment.
+          </p>
+        </div>
+      </div>
+
       {/* Header with Dropdowns */}
       <header className="border-b bg-white shadow-sm">
         <div className="max-w-5xl mx-auto px-6 py-4">
@@ -121,7 +130,7 @@ export default function ExplainableDashboard() {
 
       <main className="max-w-5xl mx-auto px-6 py-10">
         {/* Input Section */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
+        <div className="bg-white rounded-2xl card-shadow border border-gray-200 p-8 mb-8">
           <label className="block text-sm font-medium text-gray-700 mb-3">
             Enter User ID
           </label>
@@ -167,11 +176,11 @@ export default function ExplainableDashboard() {
         {selectedUser && (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* User Header */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+            <div className="bg-white rounded-2xl card-shadow border border-gray-200 p-8">
               <div className="flex items-start gap-6 mb-6">
                 {/* Profile Picture */}
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <User size={36} className="text-white" />
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                  <User size={28} className="text-white" />
                 </div>
 
                 <div className="flex-1">
@@ -179,7 +188,7 @@ export default function ExplainableDashboard() {
                     <div>
                       <div className="flex items-center gap-3 mb-2">
                         <h2 className="text-2xl font-bold text-gray-900">
-                          User {selectedUser.metawinUserId.slice(0, 8).toUpperCase()}
+                          User {selectedUser.metawinUserId.slice(0, 8).toUpperCase()}...
                         </h2>
                         {/* Country Flag */}
                         {selectedUser.primaryCountry && (
@@ -224,10 +233,19 @@ export default function ExplainableDashboard() {
                         <span className="text-sm text-gray-500">
                           {selectedUser.walletProviders}
                         </span>
+                        {/* Circle separator + Balance Group - only show if user has wallets */}
+                        {selectedUser.allWallets && selectedUser.allWallets.trim() !== '' && (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span className="text-sm text-gray-500">
+                              balance group: {selectedUser.balanceGroup}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
 
-                    {/* Attribution Badge + Balance Group */}
+                    {/* Attribution Badge */}
                     <div className="flex flex-col items-end gap-2">
                       <div className={`
                         flex items-center gap-2 px-4 py-2 rounded-full
@@ -245,14 +263,6 @@ export default function ExplainableDashboard() {
                           {selectedUser.attribution.status === 'attributed' ? 'Attributed' : 'Not Attributed'}
                         </span>
                       </div>
-
-                      {/* Balance Group Badge */}
-                      <div className={`
-                        px-3 py-1 rounded-full text-xs font-semibold
-                        ${getBalanceGroupColor(selectedUser.balanceGroup)}
-                      `}>
-                        {selectedUser.balanceGroup}
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -265,13 +275,13 @@ export default function ExplainableDashboard() {
                   value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`}
                   highlight={true}
                 />
-                <StatCard
-                  label="Total Deposits"
-                  value={`${selectedUser.totalAttributedFtd} deposits`}
-                />
                 <DateStatCard
                   label="First FTD Date"
                   date={selectedUser.firstTimeFtd}
+                />
+                <StatCard
+                  label="Total Deposits"
+                  value={`${selectedUser.totalAttributedFtd} deposits`}
                 />
                 <StatCard
                   label="Total Deposit Value"
@@ -283,12 +293,13 @@ export default function ExplainableDashboard() {
 
 
             {/* Narrative Story - Dynamic */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 pt-6">
+            <div className="bg-white rounded-2xl card-shadow border border-gray-200 p-8 pt-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">Journey Story</h3>
               <div className="relative pb-4">
                 {generateUserStory(selectedUser).map((section, idx, arr) => (
                   <NarrativeSection
                     key={idx}
+                    index={idx}
                     icon={<section.icon size={18} className="text-white relative z-10" />}
                     title={section.title}
                     content={section.content}
@@ -328,7 +339,9 @@ function StatCard({ label, value, highlight = false }: { label: string; value: s
 function DateStatCard({ label, date }: { label: string; date: string }) {
   // Parse and format the date more prominently
   const formatDate = (dateStr: string) => {
-    const parts = dateStr.split('-');
+    // Extract just the date part (first 10 characters: YYYY-MM-DD)
+    const datePart = dateStr.split(' ')[0];
+    const parts = datePart.split('-');
     if (parts.length === 3) {
       const year = parts[0];
       const month = parts[1];
@@ -367,7 +380,8 @@ function NarrativeSection({
   isLast = false,
   highlight = false,
   date,
-  colorClass
+  colorClass,
+  index = 0
 }: {
   icon: React.ReactNode;
   title: string;
@@ -376,7 +390,34 @@ function NarrativeSection({
   highlight?: boolean;
   date?: string;
   colorClass?: string;
+  index?: number;
 }) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsRevealed(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px' // Trigger slightly before reaching bottom edge
+      }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [index]);
+
   const getColorBg = (cls?: string) => {
     if (!cls) return 'bg-gray-100 text-gray-500';
     if (cls.includes('amber')) return 'bg-amber-500 text-white';
@@ -435,7 +476,10 @@ function NarrativeSection({
   };
 
   return (
-    <div className="flex gap-4 relative">
+    <div
+      ref={sectionRef}
+      className={`flex gap-4 relative timeline-item ${isRevealed ? 'revealed' : ''}`}
+    >
       {/* Timeline Column */}
       <div className="flex flex-col items-center">
         {/* Icon Circle */}
@@ -449,17 +493,17 @@ function NarrativeSection({
         </div>
         {/* Connecting Line */}
         {!isLast && (
-          <div className="w-0.5 grow bg-gray-200 mt-1 mb-1" />
+          <div className="w-0.5 grow bg-gray-200 mt-1 mb-1 timeline-line" />
         )}
       </div>
 
       {/* Content Column */}
       <div className="flex-1 pb-8">
         <div className={`
-                  rounded-xl p-5 border transition-all duration-200 shadow-sm
+                  rounded-xl p-5 border transition-all duration-200 card-shadow
                   ${highlight
-            ? 'bg-gradient-to-br from-gray-50 to-white border-purple-200 shadow-md ring-1 ring-purple-50'
-            : 'bg-white border-gray-200 hover:shadow-md'
+            ? 'bg-gradient-to-br from-gray-50 to-white border-purple-400'
+            : 'bg-white border-gray-200'
           }
               `}>
           <div className="flex items-start justify-between mb-2">
