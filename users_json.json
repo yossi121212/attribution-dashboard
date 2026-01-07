@@ -1,0 +1,675 @@
+[
+  {
+    "sdkStrongId": "2fd10e2bb39974f65a1aa18051c127175d2dcab2e7fc77089e4a4fb9",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-23",
+    "firstTimeFtd": "2025-11-29",
+    "firstTimeAttributedFtd": "2025-11-29",
+    "firstTimeAttributed": "2025-11-05",
+    "daysVisitBeforeBeingAttributed": 27,
+    "totalAttributedFtd": 10,
+    "totalAttributedFtdValue": 2971,
+    "totalAttributedPurchase": 20,
+    "totalAttributedPurchaseValue": 300.118847,
+    "dailyImps": [
+      {
+        "date": "2025-11-05",
+        "domain": "accuweather.com",
+        "count": 1
+      }
+    ],
+    "banners": "728x90.png",
+    "dailyClicks": 0,
+    "allWallets": "Japan",
+    "primaryCountry": "No Balance",
+    "balanceGroup": "[Metamask]",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "2a39e252d1887ee04ec58bf1b8ba89f2f6fe56a559646c8b5703cb0b",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-24",
+    "firstTimeFtd": "2025-12-11",
+    "firstTimeAttributedFtd": "2025-12-11",
+    "firstTimeAttributed": "2025-10-21",
+    "daysVisitBeforeBeingAttributed": 17,
+    "totalAttributedFtd": 6,
+    "totalAttributedFtdValue": 20945,
+    "totalAttributedPurchase": 4,
+    "totalAttributedPurchaseValue": 5002,
+    "dailyImps": [
+      {
+        "date": "2025-10-21",
+        "domain": "modrinth.com",
+        "count": 50
+      },
+      {
+        "date": "2025-10-21",
+        "domain": "myinstants.com",
+        "count": 7
+      },
+      {
+        "date": "2025-10-22",
+        "domain": "modrinth.com",
+        "count": 10
+      },
+      {
+        "date": "2025-12-11",
+        "domain": "imgflip.com",
+        "count": 4
+      },
+      {
+        "date": "2025-10-21",
+        "domain": "inchcalculator.com",
+        "count": 7
+      },
+      {
+        "date": "2025-11-13",
+        "domain": "dailymotion.com",
+        "count": 16
+      }
+    ],
+    "banners": "Static - 300x250",
+    "dailyClicks": 0,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "49460946fa72daafa773e29707235ef5e78650d25b8dce1d1d4316e8",
+    "metawinUserId": "[0x7e7cb34e0d1e4532ba3afdf802902a1625fa8145, 0xeaee5078a0b45ffe0c3d64c19fc6f2c9646981f0, 0xc8444b04a1bde4cd5298f61ec30b9388ad6bde29, 0x125e99cade1988413c63be630109fb52b13f2eb8, 0xd5fa94192f0a0dd911d2fd8a84f4ec5c943322ff, 0x923fff833289b0e02af04d82cedcf30e32b5c41d]",
+    "metawinUserIdFirstTime": "India",
+    "metawinUserIdFirstFtd": "$1K - $10K",
+    "firstTimeSeen": "2025-10-28",
+    "firstTimeFtd": "2025-11-12",
+    "firstTimeAttributedFtd": "2025-11-12",
+    "firstTimeAttributed": "2025-11-12",
+    "daysVisitBeforeBeingAttributed": 1,
+    "totalAttributedFtd": 2,
+    "totalAttributedFtdValue": 0,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "OKX",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "8951d375cb5f57ae9776f278fedae899e9c7acb07b8df92610fd6f4a",
+    "metawinUserId": "2025-11-28 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-11-28 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "[0xf51e122b0b1e334baee90ed796c89dbefcd0ba42]",
+    "firstTimeSeen": "2025-09-26",
+    "firstTimeFtd": "2025-11-28",
+    "firstTimeAttributedFtd": "2025-11-28",
+    "firstTimeAttributed": "2025-10-24",
+    "daysVisitBeforeBeingAttributed": 17,
+    "totalAttributedFtd": 6,
+    "totalAttributedFtdValue": 793.5580090000001,
+    "totalAttributedPurchase": 3,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "Romania",
+    "primaryCountry": "<$1k",
+    "balanceGroup": "[Metamask]",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "2a03ac2b2498c0bf25d617a9970fa98789d1bbdc606ec9d313dbbdd3",
+    "metawinUserId": "2025-12-05 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-05 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "[0x22f5ba98dcee0348b22bcc2e2cf8d0ea11cbe5e2]",
+    "firstTimeSeen": "2025-10-12",
+    "firstTimeFtd": "2025-12-05",
+    "firstTimeAttributedFtd": "2025-12-05",
+    "firstTimeAttributed": "2025-11-08",
+    "daysVisitBeforeBeingAttributed": 2,
+    "totalAttributedFtd": 1,
+    "totalAttributedFtdValue": 0.597366318,
+    "totalAttributedPurchase": 1,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "Philippines",
+    "primaryCountry": "<$1k",
+    "balanceGroup": "[Metamask]",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "08fe381499e09c1800e644c83fcbd7b6dd598f009f9e00949d72d210",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "Sweden",
+    "firstTimeSeen": "2025-10-07",
+    "firstTimeFtd": "2025-11-18",
+    "firstTimeAttributedFtd": "2025-11-18",
+    "firstTimeAttributed": "2025-11-18",
+    "daysVisitBeforeBeingAttributed": 1,
+    "totalAttributedFtd": 2,
+    "totalAttributedFtdValue": 0,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "No Balance",
+    "primaryCountry": "[]",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "bc1422fc3db193c6dabf16b197d4a0ac46726d1fc60c33a83308f4b8",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-27",
+    "firstTimeFtd": "2025-11-28",
+    "firstTimeAttributedFtd": "2025-11-28",
+    "firstTimeAttributed": "2025-11-05",
+    "daysVisitBeforeBeingAttributed": 14,
+    "totalAttributedFtd": 4,
+    "totalAttributedFtdValue": 0.07471348197669689,
+    "totalAttributedPurchase": 30,
+    "totalAttributedPurchaseValue": 0.023463079898186107,
+    "dailyImps": [
+      {
+        "date": "2025-11-05",
+        "domain": "belfastlive.co.uk",
+        "count": 1
+      }
+    ],
+    "banners": "300x250.png",
+    "dailyClicks": 0,
+    "allWallets": "Australia",
+    "primaryCountry": "No Balance",
+    "balanceGroup": "[Metamask]",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "6cd6881aec361bd951b30c3a32f523fa7968254314389145cf604756",
+    "metawinUserId": "2025-12-11 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-11 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-12-11",
+    "firstTimeFtd": "2025-12-11",
+    "firstTimeAttributedFtd": "2025-12-11",
+    "firstTimeAttributed": "2025-12-11",
+    "daysVisitBeforeBeingAttributed": 0,
+    "totalAttributedFtd": 3,
+    "totalAttributedFtdValue": 0.025758768601061646,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 48594,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "b0f76a45101ea2c673e9abdb0adfc2c89e47639ca04dccecddc9ec6c",
+    "metawinUserId": "2025-12-05 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-05 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-26",
+    "firstTimeFtd": "2025-12-05",
+    "firstTimeAttributedFtd": "2025-12-05",
+    "firstTimeAttributed": "2025-12-05",
+    "daysVisitBeforeBeingAttributed": 9,
+    "totalAttributedFtd": 1,
+    "totalAttributedFtdValue": 0.05499999999999999,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 37,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "06d2e835d7b90e8d906785e5df92a581177f0ae3c109952aa5f15f2b",
+    "metawinUserId": "2025-11-25 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-12 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-24",
+    "firstTimeFtd": "2025-12-12",
+    "firstTimeAttributedFtd": "2025-12-12",
+    "firstTimeAttributed": "2025-12-12",
+    "daysVisitBeforeBeingAttributed": 42,
+    "totalAttributedFtd": 2,
+    "totalAttributedFtdValue": 0.02272,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "40a12e0985721d3d5748181b3f9a6bea8948cc43620914adc5161266",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-23",
+    "firstTimeFtd": "2025-11-30",
+    "firstTimeAttributedFtd": "2025-11-30",
+    "firstTimeAttributed": "2025-11-04",
+    "daysVisitBeforeBeingAttributed": 15,
+    "totalAttributedFtd": 5,
+    "totalAttributedFtdValue": 5.247,
+    "totalAttributedPurchase": 8,
+    "totalAttributedPurchaseValue": 4,
+    "dailyImps": [
+      {
+        "date": "2025-11-04",
+        "domain": "gulte.com",
+        "count": 2
+      }
+    ],
+    "banners": "300x250.png",
+    "dailyClicks": 0,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "833e91735ea74d701a3e48051065eebb3a49885f8ef1ec483f11bd62",
+    "metawinUserId": "2025-11-27 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-11 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-24",
+    "firstTimeFtd": "2025-12-11",
+    "firstTimeAttributedFtd": "2025-12-11",
+    "firstTimeAttributed": "2025-12-03",
+    "daysVisitBeforeBeingAttributed": 63,
+    "totalAttributedFtd": 2,
+    "totalAttributedFtdValue": 0.32274354000000005,
+    "totalAttributedPurchase": 0,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 55772,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "0f9dd14101456d534bf1e85d6a71d76e07ae851254f98120f876cb3b",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-23",
+    "firstTimeFtd": "2025-11-28",
+    "firstTimeAttributedFtd": "2025-11-28",
+    "firstTimeAttributed": "2025-11-04",
+    "daysVisitBeforeBeingAttributed": 41,
+    "totalAttributedFtd": 6,
+    "totalAttributedFtdValue": 2352.712157,
+    "totalAttributedPurchase": 3,
+    "totalAttributedPurchaseValue": 524.5,
+    "dailyImps": [
+      {
+        "date": "2025-11-04",
+        "domain": "lyonmag.com",
+        "count": 1
+      }
+    ],
+    "banners": "300x250.png",
+    "dailyClicks": 0,
+    "allWallets": "France",
+    "primaryCountry": "No Balance",
+    "balanceGroup": "[]",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "d2af8b9e9951f5dd200b778596d7cf508628c7853234b1540848fd3a",
+    "metawinUserId": "2025-11-28 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-11-28 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-10-01",
+    "firstTimeFtd": "2025-11-28",
+    "firstTimeAttributedFtd": "2025-11-28",
+    "firstTimeAttributed": "2025-11-05",
+    "daysVisitBeforeBeingAttributed": 8,
+    "totalAttributedFtd": 3,
+    "totalAttributedFtdValue": 2.0649999999999995,
+    "totalAttributedPurchase": 3,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 0,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "1f418180468056bb4079fd4b78de2fee9cb0d937c07bc8eb20432c7f",
+    "metawinUserId": "",
+    "metawinUserIdFirstTime": "-",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-24",
+    "firstTimeFtd": "2025-11-30",
+    "firstTimeAttributedFtd": "2025-11-30",
+    "firstTimeAttributed": "2025-11-04",
+    "daysVisitBeforeBeingAttributed": 39,
+    "totalAttributedFtd": 1,
+    "totalAttributedFtdValue": 0.045952038233164,
+    "totalAttributedPurchase": 15,
+    "totalAttributedPurchaseValue": 0.3688901837081279,
+    "dailyImps": [
+      {
+        "date": "2025-11-04",
+        "domain": "laurasbakery.nl",
+        "count": 1
+      },
+      {
+        "date": "2025-11-04",
+        "domain": "flyingfoodie.nl",
+        "count": 3
+      }
+    ],
+    "banners": "300x250.png",
+    "dailyClicks": 0,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  },
+  {
+    "sdkStrongId": "716578961d7beb4b88fc5a09e987297cbf8c63475f95051e8e8203f7",
+    "metawinUserId": "2025-12-03 00:00:00.000000 UTC",
+    "metawinUserIdFirstTime": "2025-12-03 00:00:00.000000 UTC",
+    "metawinUserIdFirstFtd": "-",
+    "firstTimeSeen": "2025-09-25",
+    "firstTimeFtd": "2025-12-03",
+    "firstTimeAttributedFtd": "2025-12-03",
+    "firstTimeAttributed": "2025-11-05",
+    "daysVisitBeforeBeingAttributed": 21,
+    "totalAttributedFtd": 8,
+    "totalAttributedFtdValue": 10158.531941000001,
+    "totalAttributedPurchase": 1,
+    "totalAttributedPurchaseValue": 0,
+    "dailyImps": [],
+    "banners": "",
+    "dailyClicks": 8,
+    "allWallets": "",
+    "primaryCountry": "",
+    "balanceGroup": "No Balance",
+    "walletProviders": "",
+    "timeline": [],
+    "adExposures": [],
+    "attribution": {
+      "status": "attributed",
+      "signal": "post_view",
+      "window": "30d",
+      "campaign": "CSV Imported Campaign",
+      "reason": "Generated from production CSV data."
+    },
+    "narrative": {
+      "whoThisUserIs": "User imported from production data.",
+      "beforeAds": "...",
+      "adExposure": "...",
+      "afterAds": "...",
+      "howAttributed": "..."
+    }
+  }
+]

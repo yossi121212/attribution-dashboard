@@ -15,6 +15,22 @@ import {
     Search
 } from 'lucide-react';
 
+// Format date from YYYY-MM-DD to "Nov 26, 2025"
+function formatDateToReadable(dateStr: string): string {
+    // Handle various date formats
+    const cleanDate = dateStr.split(' ')[0]; // Remove time portion if present
+    const parts = cleanDate.split('-');
+    if (parts.length === 3) {
+        const year = parts[0];
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthName = monthNames[month - 1] || parts[1];
+        return `${monthName} ${day}, ${year}`;
+    }
+    return dateStr; // Return original if can't parse
+}
+
 export interface StorySection {
     title: string;
     icon: any; // Lucide icon
@@ -29,11 +45,11 @@ export function generateUserStory(user: UserProfile): StorySection[] {
 
     // 1. First Seen
     sections.push({
-        title: 'First Seen',
+        title: 'First Seen by Addressable',
         icon: Eye,
         colorClass: 'text-amber-600', // Yellow/Amber
-        date: user.firstTimeSeen,
-        content: `User first seen on our system on ${user.firstTimeSeen}.\nat this stage, there were no deposits or conversions — just the beginning of their digital footprint.`
+        date: formatDateToReadable(user.firstTimeSeen),
+        content: `User first seen on our system on ${formatDateToReadable(user.firstTimeSeen)}.`
     });
 
     // 2. Ad Exposure
@@ -47,13 +63,13 @@ export function generateUserStory(user: UserProfile): StorySection[] {
         const firstImpDate = sortedImps[0].date.split(' ')[0]; // extract YYYY-MM-DD
         const firstDayImps = sortedImps.filter(imp => imp.date.startsWith(firstImpDate));
 
-        const impList = firstDayImps.map(imp => `• ${imp.domain} — ${imp.count} impressions`).join('\n');
+        const impList = firstDayImps.map(imp => `• ${imp.domain} - ${imp.count} impressions`).join('\n');
 
         sections.push({
             title: 'Ad Exposure Begins',
             icon: Eye,
             colorClass: 'text-purple-600',
-            date: firstImpDate,
+            date: formatDateToReadable(firstImpDate),
             content: `The user starts seeing Addressable ads while browsing various sites:\n${impList}\n\nThis is not a single active interaction, but repeated passive exposure throughout the day.`
         });
 
@@ -62,13 +78,12 @@ export function generateUserStory(user: UserProfile): StorySection[] {
         if (subsequentImps.length > 0) {
             // Group by date for a concise list
             const uniqueDates = Array.from(new Set(subsequentImps.map(imp => imp.date.split(' ')[0])));
-            const continuedContent = uniqueDates.slice(0, 3).map(date => {
-                const daysImps = subsequentImps.filter(i => i.date.startsWith(date));
-                const domains = daysImps.map(i => `${i.domain} (${i.count})`).join(', ');
-                return `• ${date} — ${domains}`;
+            const continuedContent = subsequentImps.slice(0, 6).map(imp => {
+                const date = imp.date.split(' ')[0];
+                return `• ${imp.domain} - ${imp.count} impressions | ${formatDateToReadable(date)}`;
             }).join('\n');
 
-            const extraCount = uniqueDates.length > 3 ? `\n...and exposure on ${uniqueDates.length - 3} more days.` : '';
+            const extraCount = subsequentImps.length > 6 ? `\n...and exposure on ${subsequentImps.length - 6} more sites.` : '';
 
             sections.push({
                 title: 'Continued Exposure Over Time',
@@ -79,16 +94,7 @@ export function generateUserStory(user: UserProfile): StorySection[] {
         }
     }
 
-    // 3. First Attribution Point
-    if (user.attribution?.status === 'attributed' && user.firstTimeAttributed) {
-        sections.push({
-            title: 'First Attribution Point',
-            icon: CheckCircle2,
-            colorClass: 'text-emerald-600',
-            date: user.firstTimeAttributed,
-            content: `This is the first moment the user entered our attribution window.\nFrom this point on, qualifying actions may be attributed to the campaign.\n\nDays from first visit to attribution: ${user.daysVisitBeforeBeingAttributed}`
-        });
-    }
+
 
     // 4. User Identified (Matching metawinUserIdFirstTime or similar logic if distinct)
     // The user prompt example had "User Identified by Advertiser" distinct from FTD. 
@@ -97,11 +103,11 @@ export function generateUserStory(user: UserProfile): StorySection[] {
     // Let's add it if available.
     if (user.metawinUserIdFirstTime && user.metawinUserIdFirstTime !== user.firstTimeSeen) {
         sections.push({
-            title: 'User Identified by Advertiser',
+            title: 'User ID provided by Advertiser',
             icon: User,
             colorClass: 'text-blue-600',
-            date: user.metawinUserIdFirstTime,
-            content: `Received user identifier from Client system.\nFull match established between ad activity and platform activity.`
+            date: formatDateToReadable(user.metawinUserIdFirstTime),
+            content: `Received user identifier from Advertiser system.\nFull match established between ad activity and platform activity.`
         });
     }
 
@@ -112,7 +118,7 @@ export function generateUserStory(user: UserProfile): StorySection[] {
             title: 'First Time Deposit (FTD)',
             icon: DollarSign, // Using generic icon or we can import Wallet/Badge
             colorClass: 'text-yellow-600', // Gold/Yellow
-            date: user.firstTimeAttributedFtd,
+            date: formatDateToReadable(user.firstTimeAttributedFtd),
             content: `The user makes their first deposit.\n• First FTD ever\n• First FTD attributed to us\n\nThe deposit meets attribution rules (window, signal) and is credited to the campaign.`
         });
     }
@@ -120,24 +126,12 @@ export function generateUserStory(user: UserProfile): StorySection[] {
     // 6. Post FTD Value
     if (user.totalAttributedPurchase > 0) {
         sections.push({
-            title: 'After the FTD — Ongoing Value',
+            title: 'After the FTD - Ongoing Value',
             icon: TrendingUp,
             colorClass: 'text-indigo-500',
             content: `Following the FTD, the user continues to engage:\n• ${user.totalAttributedPurchase} attributed purchases\n• Total Value: $${user.totalAttributedPurchaseValue.toFixed(2)}\n• High-value behavior pattern detected.`
         });
     }
-
-    // 7. Summary
-    const summaryContent = user.attribution.status === 'attributed'
-        ? `This user was exposed to ads across multiple days, entered the window ${user.daysVisitBeforeBeingAttributed} days later, and converted. Value generation occurred entirely post-exposure.`
-        : `This user was seen but did not convert within the attribution window or satisfy the signal requirements.`;
-
-    sections.push({
-        title: 'Summary',
-        icon: Search,
-        colorClass: 'text-gray-700',
-        content: summaryContent
-    });
 
     return sections;
 }

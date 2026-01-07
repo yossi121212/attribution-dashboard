@@ -45,6 +45,8 @@ import {
     Check,
     Calendar,
     WalletCards,
+    Maximize2,
+    Minimize2,
 } from 'lucide-react';
 import * as Flags from 'country-flag-icons/react/3x2';
 import { WalletIcon } from '@/components/wallet-icons';
@@ -345,15 +347,21 @@ export default function UsersStoryPage() {
             id: 'dailyImps',
             header: () => <HeaderWithTooltip title="Daily Imps" tooltip={columnTooltips.dailyImps} />,
             cell: info => (
-                <div className="flex flex-col gap-1 py-1">
+                <div className="flex flex-col gap-1.5 py-1">
                     {info.getValue().sort((a: DailyImpression, b: DailyImpression) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((imp: DailyImpression, idx: number) => (
-                        <div key={idx} className="text-xs text-gray-600 whitespace-nowrap font-mono">
-                            {imp.date.split(' ')[0]}: {imp.domain} ({imp.count})
+                        <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 border border-slate-200 rounded-md">
+                                <Calendar size={10} className="text-slate-500" />
+                                <span className="font-mono font-medium text-slate-600">{formatDateString(imp.date.split(' ')[0])}</span>
+                            </span>
+                            <span className="text-gray-600">-</span>
+                            <span className="text-gray-700">{imp.domain}</span>
+                            <span className="text-gray-500">({imp.count} impressions)</span>
                         </div>
                     ))}
                 </div>
             ),
-            size: 280,
+            size: 380,
         }),
         columnHelper.accessor('banners', {
             id: 'banners',
@@ -382,7 +390,11 @@ export default function UsersStoryPage() {
         columnHelper.accessor('allWallets', {
             id: 'allWallets',
             header: () => <HeaderWithTooltip title="All Wallets" tooltip={columnTooltips.allWallets} />,
-            cell: info => <CopyableIdCell value={info.getValue()} />,
+            cell: info => {
+                const val = info.getValue();
+                if (!val) return <span className="text-gray-400">-</span>;
+                return <CopyableIdCell value={val} />;
+            },
             size: 180,
         }),
         columnHelper.accessor('primaryCountry', {
@@ -415,7 +427,9 @@ export default function UsersStoryPage() {
             id: 'walletProviders',
             header: () => <HeaderWithTooltip title="Wallet Providers" tooltip={columnTooltips.walletProviders} />,
             cell: info => {
-                const providers = info.getValue().split(',').map((p: string) => p.trim());
+                const val = info.getValue();
+                if (!val || val === '[]' || val === '') return <span className="text-gray-400">-</span>;
+                const providers = val.split(',').map((p: string) => p.trim()).filter((p: string) => p);
                 return (
                     <div className="flex items-center gap-2">
                         {providers.map((provider: string, idx: number) => (
@@ -486,7 +500,7 @@ export default function UsersStoryPage() {
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Main Content */}
-            <div className={`flex-1 min-w-0 transition-all duration-300 ${selectedUser ? 'mr-[520px]' : ''}`}>
+            <div className={`flex-1 min-w-0 transition-all duration-300`}>
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 px-8 py-6">
                     <div className="flex items-center gap-3">
@@ -586,107 +600,135 @@ export default function UsersStoryPage() {
 }
 
 function UserFlyout({ user, onClose }: { user: UserProfile; onClose: () => void }) {
+    const [isFullScreen, setIsFullScreen] = useState(false);
+
     return (
-        <div className="fixed right-0 top-0 h-full w-[520px] bg-white border-l border-gray-200 shadow-xl overflow-y-auto z-50">
-            {/* Flyout Header */}
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-                <div className="flex items-center gap-4">
-                    {/* User Avatar */}
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
-                        {user.metawinUserId.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <CountryFlag countryCode={user.primaryCountry} />
-                            <h2 className="text-lg font-bold text-gray-900">
-                                User Details
-                            </h2>
+        <>
+            {/* Backdrop */}
+            <div
+                className="fixed inset-0 bg-black/20 z-40 transition-opacity"
+                onClick={onClose}
+            />
+
+            <div className={`
+                fixed right-0 top-0 h-full bg-white border-l border-gray-200 shadow-xl overflow-y-auto z-50 transition-all duration-300
+                ${isFullScreen ? 'w-full' : 'w-[520px]'}
+            `}>
+                {/* Flyout Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+                    <div className="flex items-center gap-4">
+                        {/* User Avatar */}
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                            {user.metawinUserId.charAt(0).toUpperCase()}
                         </div>
-                        <p className="text-sm text-gray-500 font-mono truncate max-w-[300px]" title={user.metawinUserId}>
-                            {user.metawinUserId.length > 12 ? `${user.metawinUserId.slice(0, 6)}...${user.metawinUserId.slice(-4)}` : user.metawinUserId}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                            <Wallet size={14} className="text-gray-400" />
-                            <p className="text-sm text-gray-500 font-mono">
-                                {user.allWallets.slice(0, 6)}...{user.allWallets.slice(-4)}
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <CountryFlag countryCode={user.primaryCountry} />
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    User Details
+                                </h2>
+                            </div>
+                            <p className="text-sm text-gray-500 font-mono truncate max-w-[300px]" title={user.metawinUserId}>
+                                {user.metawinUserId.length > 12 ? `${user.metawinUserId.slice(0, 6)}...${user.metawinUserId.slice(-4)}` : user.metawinUserId}
+                            </p>
+                            <div className="flex items-center gap-2 mt-1">
+                                <Wallet size={14} className="text-gray-400" />
+                                <p className="text-sm text-gray-500 font-mono">
+                                    {user.allWallets.slice(0, 6)}...{user.allWallets.slice(-4)}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center">
+                        <button
+                            onClick={() => setIsFullScreen(!isFullScreen)}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors mr-2"
+                            title={isFullScreen ? "Exit full screen" : "Full screen"}
+                        >
+                            {isFullScreen ? (
+                                <Minimize2 size={20} className="text-gray-500" />
+                            ) : (
+                                <Maximize2 size={20} className="text-gray-500" />
+                            )}
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                            <X size={20} className="text-gray-500" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Flyout Content */}
+                <div className="p-6 space-y-6">
+                    {/* Attribution Status Banner */}
+                    <div className={`
+                    flex items-center gap-3 px-4 py-3 rounded-xl
+                    ${user.attribution.status === 'attributed'
+                            ? 'bg-emerald-50 border border-emerald-200'
+                            : 'bg-gray-50 border border-gray-200'
+                        }
+                `}>
+                        {user.attribution.status === 'attributed' ? (
+                            <CheckCircle2 size={20} className="text-emerald-600" />
+                        ) : (
+                            <XCircle size={20} className="text-gray-400" />
+                        )}
+                        <div>
+                            <p className={`font-semibold ${user.attribution.status === 'attributed' ? 'text-emerald-700' : 'text-gray-600'}`}>
+                                {user.attribution.status === 'attributed' ? 'Attributed' : 'Not Attributed'}
                             </p>
                         </div>
                     </div>
-                </div>
-                <button
-                    onClick={onClose}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                    <X size={20} className="text-gray-500" />
-                </button>
-            </div>
 
-            {/* Flyout Content */}
-            <div className="p-6 space-y-6">
-                {/* Attribution Status Banner */}
-                <div className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl
-                    ${user.attribution.status === 'attributed'
-                        ? 'bg-emerald-50 border border-emerald-200'
-                        : 'bg-gray-50 border border-gray-200'
-                    }
-                `}>
-                    {user.attribution.status === 'attributed' ? (
-                        <CheckCircle2 size={20} className="text-emerald-600" />
-                    ) : (
-                        <XCircle size={20} className="text-gray-400" />
-                    )}
-                    <div>
-                        <p className={`font-semibold ${user.attribution.status === 'attributed' ? 'text-emerald-700' : 'text-gray-600'}`}>
-                            {user.attribution.status === 'attributed' ? 'Attributed' : 'Not Attributed'}
-                        </p>
-                    </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3">
-                    <StatCard label="Total Attributed FTD Value" value={`$${user.totalAttributedFtdValue.toLocaleString()}`} />
-                    <StatCard label="Total Attributed Purchase Value" value={`$${user.totalAttributedPurchaseValue ? user.totalAttributedPurchaseValue.toLocaleString() : '0'}`} />
-                    <StatCard
-                        label="Balance Group"
-                        value={user.balanceGroup}
-                        valueClassName={`inline-block px-2 py-0.5 rounded-full text-xs ${getBalanceGroupColor(user.balanceGroup)}`}
-                    />
-                    <StatCard label="Number of Wallets" value={user.walletProviders ? user.walletProviders.split(',').length.toString() : '0'} />
-
-                    <div className="bg-gray-50 rounded-lg p-3 col-span-2">
-                        <p className="text-xs text-gray-500 mb-2">Wallet Providers</p>
-                        <div className="flex items-center gap-3">
-                            {user.walletProviders.split(',').map(p => p.trim()).map((provider, idx) => (
-                                <div key={idx} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
-                                    <WalletIcon provider={provider} className="w-5 h-5" />
-                                    <span className="text-sm font-medium text-gray-700">{provider}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Dynamic Story Timeline */}
-                <div className="relative pb-4">
-                    {generateUserStory(user).map((section, idx) => (
-                        <NarrativeSection
-                            key={idx}
-                            icon={<section.icon size={18} className="text-white relative z-10" />}
-                            title={section.title}
-                            content={section.content}
-                            date={section.date}
-                            isLast={idx === generateUserStory(user).length - 1}
-                            colorClass={section.colorClass}
-                            highlight={section.title === 'First Time Deposit (FTD)' || section.title === 'Summary'}
+                    {/* Quick Stats */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <StatCard label="Total Attributed FTD Value" value={`$${user.totalAttributedFtdValue.toLocaleString()}`} />
+                        <StatCard label="Total Attributed Purchase Value" value={`$${user.totalAttributedPurchaseValue ? user.totalAttributedPurchaseValue.toLocaleString() : '0'}`} />
+                        <StatCard
+                            label="Balance Group"
+                            value={user.balanceGroup}
+                            valueClassName={`inline-block px-2 py-0.5 rounded-full text-xs ${getBalanceGroupColor(user.balanceGroup)}`}
                         />
-                    ))}
+                        <StatCard label="Number of Wallets" value={user.walletProviders && user.walletProviders !== '[]' && user.walletProviders !== '' ? user.walletProviders.split(',').length.toString() : '0'} />
+
+                        {user.walletProviders && user.walletProviders !== '[]' && user.walletProviders !== '' && (
+                            <div className="bg-gray-50 rounded-lg p-3 col-span-2">
+                                <p className="text-xs text-gray-500 mb-2">Wallet Providers</p>
+                                <div className="flex items-center gap-3">
+                                    {user.walletProviders.split(',').map(p => p.trim()).filter(p => p).map((provider, idx) => (
+                                        <div key={idx} className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                                            <WalletIcon provider={provider} className="w-5 h-5" />
+                                            <span className="text-sm font-medium text-gray-700">{provider}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Dynamic Story Timeline */}
+                    <div className="relative pb-4">
+                        {generateUserStory(user).map((section, idx) => (
+                            <NarrativeSection
+                                key={idx}
+                                icon={<section.icon size={18} className="text-white relative z-10" />}
+                                title={section.title}
+                                content={section.content}
+                                date={section.date}
+                                isLast={idx === generateUserStory(user).length - 1}
+                                colorClass={section.colorClass}
+                                highlight={section.title === 'First Time Deposit (FTD)' || section.title === 'Summary'}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Narrative Sections */}
+
                 </div>
-
-                {/* Narrative Sections */}
-
             </div>
-        </div>
+        </>
     );
 }
 

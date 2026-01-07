@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getAllUsers, UserProfile } from '@/lib/data';
+import { WalletIcon } from '@/components/wallet-icons';
 import { generateUserStory } from '@/lib/story-generator';
 import {
   Search,
@@ -15,24 +16,33 @@ import {
   CheckCircle2,
   XCircle,
   User,
-  ChevronDown,
   Building2,
-  Megaphone
+  Calendar
 } from 'lucide-react';
 
 // Client name
 const clientName = 'MetaWin';
 
-// Campaigns grouped by channel
-const campaigns = [
-  // Display campaigns (4)
-  { id: 'ftds_high_net_worth', name: 'FTDs - High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
-  { id: 'registrations_high_net_worth', name: 'Registrations - High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
-  { id: 'high_net_worth_display', name: 'High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
-  { id: 'deposits_canada', name: 'Deposits - Purchase (Canada) - Display', channel: 'Display' },
-  // X (Twitter) campaigns (1)
-  { id: 'addr1_casino', name: 'Addr1 - Casino Gamblers', channel: 'X (Twitter)' },
-];
+// Convert country code to flag emoji
+function countryToFlag(countryCode: string): string {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+// Get color classes for balance group
+function getBalanceGroupColor(balanceGroup: string): string {
+  const colors: Record<string, string> = {
+    'No Balance': 'bg-gray-100 text-gray-700',
+    '<$1k': 'bg-blue-100 text-blue-700',
+    '$1K - $10K': 'bg-emerald-100 text-emerald-700',
+    '$10K - $100K': 'bg-purple-100 text-purple-700',
+    '$100K+': 'bg-amber-100 text-amber-700',
+  };
+  return colors[balanceGroup] || 'bg-gray-100 text-gray-700';
+}
 
 export default function ExplainableDashboard() {
   const users = getAllUsers();
@@ -40,8 +50,6 @@ export default function ExplainableDashboard() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedCampaign, setSelectedCampaign] = useState(campaigns[0]);
 
   const handleGenerate = async () => {
     setError(null);
@@ -99,33 +107,12 @@ export default function ExplainableDashboard() {
               </div>
             </div>
 
-            {/* Client & Campaign */}
-            <div className="flex items-center gap-3">
-              {/* Client Name (static display) */}
-              <div>
-                <label className="block text-xs text-gray-500 mb-1">Client</label>
-                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-                  <Building2 size={16} className="text-gray-400" />
-                  <span className="text-sm font-medium text-gray-900">{clientName}</span>
-                </div>
-              </div>
-
-              {/* Campaign Dropdown */}
-              <div className="relative">
-                <label className="block text-xs text-gray-500 mb-1">Campaign</label>
-                <div className="relative">
-                  <Megaphone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <select
-                    value={selectedCampaign.id}
-                    onChange={(e) => setSelectedCampaign(campaigns.find(c => c.id === e.target.value) || campaigns[0])}
-                    className="appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-w-[180px]"
-                  >
-                    {campaigns.map(campaign => (
-                      <option key={campaign.id} value={campaign.id}>{campaign.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                </div>
+            {/* Client */}
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Client</label>
+              <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                <Building2 size={16} className="text-gray-400" />
+                <span className="text-sm font-medium text-gray-900">{clientName}</span>
               </div>
             </div>
           </div>
@@ -136,7 +123,7 @@ export default function ExplainableDashboard() {
         {/* Input Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 mb-8">
           <label className="block text-sm font-medium text-gray-700 mb-3">
-            Enter Event ID or User ID
+            Enter User ID
           </label>
           <div className="flex gap-3">
             <div className="relative flex-1">
@@ -173,9 +160,7 @@ export default function ExplainableDashboard() {
             <p className="mt-3 text-sm text-red-600">{error}</p>
           )}
 
-          <p className="mt-3 text-xs text-gray-400">
-            Try: user_a, user_b, user_c, user_d, user_e, or any wallet fragment
-          </p>
+
         </div>
 
         {/* Results */}
@@ -183,41 +168,115 @@ export default function ExplainableDashboard() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* User Header */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    User {selectedUser.metawinUserId.slice(0, 8).toUpperCase()} – {selectedUser.allWallets.slice(0, 8)}…
-                  </h2>
-                  <p className="text-gray-500">
-                    {selectedUser.attribution.status === 'attributed'
-                      ? `Attributed via ${selectedUser.attribution.signal === 'post_click' ? 'post-click' : 'post-view'}`
-                      : 'Not attributed'}
-                  </p>
+              <div className="flex items-start gap-6 mb-6">
+                {/* Profile Picture */}
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                  <User size={36} className="text-white" />
                 </div>
-                <div className={`
-                  flex items-center gap-2 px-4 py-2 rounded-full
-                  ${selectedUser.attribution.status === 'attributed'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                    : 'bg-gray-100 text-gray-600 border border-gray-200'
-                  }
-                `}>
-                  {selectedUser.attribution.status === 'attributed' ? (
-                    <CheckCircle2 size={18} />
-                  ) : (
-                    <XCircle size={18} />
-                  )}
-                  <span className="font-medium">
-                    {selectedUser.attribution.status === 'attributed' ? 'Attributed' : 'Not Attributed'}
-                  </span>
+
+                <div className="flex-1">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-3 mb-2">
+                        <h2 className="text-2xl font-bold text-gray-900">
+                          User {selectedUser.metawinUserId.slice(0, 8).toUpperCase()}
+                        </h2>
+                        {/* Country Flag */}
+                        {selectedUser.primaryCountry && (
+                          <span
+                            className="text-2xl leading-none"
+                            title={selectedUser.primaryCountry}
+                          >
+                            {countryToFlag(selectedUser.primaryCountry)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Wallet Address */}
+                      {selectedUser.allWallets && (
+                        <div className="flex items-center gap-2 mt-1 group">
+                          <Wallet size={14} className="text-gray-400" />
+                          <code className="text-sm text-gray-500 font-mono">
+                            {selectedUser.allWallets}
+                          </code>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(selectedUser.allWallets);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-gray-100 rounded"
+                            title="Copy wallet address"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Wallet Providers */}
+                      <div className="flex items-center gap-2 mt-3">
+                        <div className="flex items-center gap-1">
+                          {selectedUser.walletProviders.split(',').map((provider, idx) => (
+                            <WalletIcon key={idx} provider={provider.trim()} className="w-5 h-5" />
+                          ))}
+                        </div>
+                        <span className="text-sm text-gray-500">
+                          {selectedUser.walletProviders}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Attribution Badge + Balance Group */}
+                    <div className="flex flex-col items-end gap-2">
+                      <div className={`
+                        flex items-center gap-2 px-4 py-2 rounded-full
+                        ${selectedUser.attribution.status === 'attributed'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-gray-100 text-gray-600 border border-gray-200'
+                        }
+                      `}>
+                        {selectedUser.attribution.status === 'attributed' ? (
+                          <CheckCircle2 size={18} />
+                        ) : (
+                          <XCircle size={18} />
+                        )}
+                        <span className="font-medium">
+                          {selectedUser.attribution.status === 'attributed' ? 'Attributed' : 'Not Attributed'}
+                        </span>
+                      </div>
+
+                      {/* Balance Group Badge */}
+                      <div className={`
+                        px-3 py-1 rounded-full text-xs font-semibold
+                        ${getBalanceGroupColor(selectedUser.balanceGroup)}
+                      `}>
+                        {selectedUser.balanceGroup}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Quick Stats */}
               <div className="grid grid-cols-4 gap-4">
-                <StatCard label="Total Deposits" value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`} />
-                <StatCard label="First Deposit" value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`} />
-                <StatCard label="FTD Date" value={selectedUser.firstTimeFtd} />
-                <StatCard label="User Type" value={selectedUser.balanceGroup} />
+                <StatCard
+                  label="Total FTD Value"
+                  value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`}
+                  highlight={true}
+                />
+                <StatCard
+                  label="Total Deposits"
+                  value={`${selectedUser.totalAttributedFtd} deposits`}
+                />
+                <DateStatCard
+                  label="First FTD Date"
+                  date={selectedUser.firstTimeFtd}
+                />
+                <StatCard
+                  label="Total Deposit Value"
+                  value={`$${selectedUser.totalAttributedPurchaseValue.toLocaleString()}`}
+                />
               </div>
             </div>
 
@@ -248,7 +307,7 @@ export default function ExplainableDashboard() {
         {!selectedUser && !isGenerating && (
           <div className="text-center py-16 text-gray-400">
             <Sparkles size={48} className="mx-auto mb-4 text-gray-300" />
-            <p className="text-lg">Enter a User ID or Event ID and click Generate</p>
+            <p className="text-lg">Enter a User ID and click Generate</p>
             <p className="text-sm mt-1">to see their attribution story</p>
           </div>
         )}
@@ -257,11 +316,46 @@ export default function ExplainableDashboard() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-gray-50 rounded-xl p-4">
+    <div className={`rounded-xl p-4 ${highlight ? 'bg-gradient-to-br from-indigo-50 to-purple-50 border border-purple-100' : 'bg-gray-50'}`}>
       <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className="text-lg font-semibold text-gray-900 capitalize">{value}</p>
+      <p className={`text-lg font-semibold capitalize ${highlight ? 'text-purple-700' : 'text-gray-900'}`}>{value}</p>
+    </div>
+  );
+}
+
+function DateStatCard({ label, date }: { label: string; date: string }) {
+  // Parse and format the date more prominently
+  const formatDate = (dateStr: string) => {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthName = monthNames[parseInt(month, 10) - 1] || month;
+      return { day, monthName, year };
+    }
+    return null;
+  };
+
+  const parsed = formatDate(date);
+
+  return (
+    <div className="bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl p-4 border border-gray-100">
+      <p className="text-xs text-gray-500 mb-2">{label}</p>
+      {parsed ? (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md text-sm font-medium">
+          <Calendar size={14} className="text-gray-500" />
+          {parsed.monthName} {parsed.day}, {parsed.year}
+        </span>
+      ) : (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 rounded-md text-sm font-medium">
+          <Calendar size={14} className="text-gray-500" />
+          {date}
+        </span>
+      )}
     </div>
   );
 }
@@ -296,6 +390,50 @@ function NarrativeSection({
 
   const iconBgStyle = getColorBg(colorClass);
 
+  // Parse content to render special formatting for impressions
+  const renderContent = (text: string) => {
+    const lines = text.split('\n');
+
+    return lines.map((line, idx) => {
+      // Check if line is an impression line
+      // Format 1: • domain.com - 50 impressions
+      // Format 2: • domain.com - 50 impressions | Oct 22, 2025
+      const match = line.match(/^• (.+?) - (\d+) impressions(?: \| (.+))?$/);
+
+      if (match) {
+        const [, domain, count, dateStr] = match;
+        return (
+          <div key={idx} className="flex items-center gap-2 py-1.5 group/line">
+            <span className="w-5 h-5 flex items-center justify-center bg-blue-50 rounded-md">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-gray-800 tracking-tight">{domain}</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+              <span className="text-gray-500">{count} impressions</span>
+              {dateStr && (
+                <>
+                  <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 rounded-md">
+                    <Calendar size={10} className="text-slate-400" />
+                    <span className="font-mono font-bold text-slate-500 text-[10px] uppercase tracking-wider">{dateStr}</span>
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      // Regular text line
+      return <div key={idx} className="py-0.5">{line}</div>;
+    });
+  };
+
   return (
     <div className="flex gap-4 relative">
       {/* Timeline Column */}
@@ -325,19 +463,17 @@ function NarrativeSection({
           }
               `}>
           <div className="flex items-start justify-between mb-2">
-            <div>
-              <h4 className="font-bold text-gray-900 text-base leading-tight">{title}</h4>
-              {date && (
-                <p className="text-xs text-gray-500 font-mono mt-1 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
-                  {date}
-                </p>
-              )}
-            </div>
+            <h4 className="font-bold text-gray-900 text-base leading-tight">{title}</h4>
+            {date && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 rounded-md text-sm font-medium">
+                <Calendar size={14} className="text-slate-500" />
+                {date}
+              </span>
+            )}
           </div>
 
-          <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-            {content}
+          <div className="text-gray-600 text-sm leading-relaxed">
+            {renderContent(content)}
           </div>
         </div>
       </div>
