@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getAllUsers, UserProfile } from '@/lib/data';
+import { generateUserStory } from '@/lib/story-generator';
 import {
   Search,
   Sparkles,
@@ -19,18 +20,18 @@ import {
   Megaphone
 } from 'lucide-react';
 
-// Sample tenants and campaigns
-const tenants = [
-  { id: 'shuffle', name: 'Shuffle' },
-  { id: '50k_trade', name: '50K Trade' },
-];
+// Client name
+const clientName = 'MetaWin';
 
+// Campaigns grouped by channel
 const campaigns = [
-  { id: 'q4_crypto_gamblers', name: 'Q4 Crypto Gamblers' },
-  { id: 'holiday_promo_2025', name: 'Holiday Promo 2025' },
-  { id: 'vip_reactivation', name: 'VIP Reactivation' },
-  { id: 'new_year_rush', name: 'New Year Rush' },
-  { id: 'affiliate_push', name: 'Affiliate Q4 Push' },
+  // Display campaigns (4)
+  { id: 'ftds_high_net_worth', name: 'FTDs - High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
+  { id: 'registrations_high_net_worth', name: 'Registrations - High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
+  { id: 'high_net_worth_display', name: 'High Net Worth Gamblers - Various Geos - Display', channel: 'Display' },
+  { id: 'deposits_canada', name: 'Deposits - Purchase (Canada) - Display', channel: 'Display' },
+  // X (Twitter) campaigns (1)
+  { id: 'addr1_casino', name: 'Addr1 - Casino Gamblers', channel: 'X (Twitter)' },
 ];
 
 export default function ExplainableDashboard() {
@@ -39,7 +40,7 @@ export default function ExplainableDashboard() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTenant, setSelectedTenant] = useState(tenants[0]);
+
   const [selectedCampaign, setSelectedCampaign] = useState(campaigns[0]);
 
   const handleGenerate = async () => {
@@ -56,17 +57,17 @@ export default function ExplainableDashboard() {
     // Simulate LLM generation delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // Find matching user (fuzzy match on ID or wallet)
+    // Find matching user (fuzzy match on ID, userId or wallet)
     const found = users.find(u =>
-      u.id.toLowerCase().includes(inputValue.toLowerCase()) ||
-      u.walletAddress.toLowerCase().includes(inputValue.toLowerCase()) ||
-      inputValue.toLowerCase().includes(u.id.split('_')[1])
+      u.metawinUserId.toLowerCase().includes(inputValue.toLowerCase()) ||
+      u.sdkStrongId.toLowerCase().includes(inputValue.toLowerCase()) ||
+      u.allWallets.toLowerCase().includes(inputValue.toLowerCase())
     );
 
     if (found) {
       setSelectedUser(found);
     } else {
-      setError(`No user found matching "${inputValue}". Try: user_a, user_b, or a wallet address fragment.`);
+      setError(`No user found matching "${inputValue}". Try a User ID, Addressable ID, or wallet address.`);
     }
 
     setIsGenerating(false);
@@ -98,23 +99,14 @@ export default function ExplainableDashboard() {
               </div>
             </div>
 
-            {/* Tenant & Campaign Dropdowns */}
+            {/* Client & Campaign */}
             <div className="flex items-center gap-3">
-              {/* Tenant Dropdown */}
-              <div className="relative">
-                <label className="block text-xs text-gray-500 mb-1">Tenant</label>
-                <div className="relative">
-                  <Building2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <select
-                    value={selectedTenant.id}
-                    onChange={(e) => setSelectedTenant(tenants.find(t => t.id === e.target.value) || tenants[0])}
-                    className="appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
-                  >
-                    {tenants.map(tenant => (
-                      <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              {/* Client Name (static display) */}
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">Client</label>
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                  <Building2 size={16} className="text-gray-400" />
+                  <span className="text-sm font-medium text-gray-900">{clientName}</span>
                 </div>
               </div>
 
@@ -194,7 +186,7 @@ export default function ExplainableDashboard() {
               <div className="flex items-start justify-between mb-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                    User {selectedUser.id.replace('user_', '').toUpperCase()} – {selectedUser.walletAddress.slice(0, 8)}…
+                    User {selectedUser.metawinUserId.slice(0, 8).toUpperCase()} – {selectedUser.allWallets.slice(0, 8)}…
                   </h2>
                   <p className="text-gray-500">
                     {selectedUser.attribution.status === 'attributed'
@@ -222,72 +214,32 @@ export default function ExplainableDashboard() {
 
               {/* Quick Stats */}
               <div className="grid grid-cols-4 gap-4">
-                <StatCard label="Total Deposits" value={`$${selectedUser.totalDeposits.toLocaleString()}`} />
-                <StatCard label="First Deposit" value={`$${selectedUser.firstDepositAmount.toLocaleString()}`} />
-                <StatCard label="FTD Date" value={selectedUser.firstDepositDate} />
-                <StatCard label="User Type" value={selectedUser.userType.replace('_', ' ')} />
+                <StatCard label="Total Deposits" value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`} />
+                <StatCard label="First Deposit" value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`} />
+                <StatCard label="FTD Date" value={selectedUser.firstTimeFtd} />
+                <StatCard label="User Type" value={selectedUser.balanceGroup} />
               </div>
             </div>
 
-            {/* Timeline */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Journey Timeline
-                </h3>
-                {selectedUser.attribution.status === 'attributed' && (
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-                    <Eye size={14} className="text-blue-600" />
-                    <span className="text-sm font-medium text-blue-700">
-                      Measurement: Post-View
-                    </span>
-                  </div>
-                )}
+
+
+            {/* Narrative Story - Dynamic */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-6">Journey Story</h3>
+              <div className="relative pb-4">
+                {generateUserStory(selectedUser).map((section, idx, arr) => (
+                  <NarrativeSection
+                    key={idx}
+                    icon={<section.icon size={18} className="text-white relative z-10" />}
+                    title={section.title}
+                    content={section.content}
+                    date={section.date}
+                    isLast={idx === arr.length - 1}
+                    highlight={section.title === 'Summary' || section.title === 'First Time Deposit (FTD)'}
+                    colorClass={section.colorClass}
+                  />
+                ))}
               </div>
-              <Timeline
-                events={selectedUser.timeline}
-                isAttributed={selectedUser.attribution.status === 'attributed'}
-                attributionWindow={selectedUser.attribution.window || '7d'}
-              />
-            </div>
-
-            {/* Narrative Story */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-              <NarrativeSection
-                icon={<User size={20} className="text-blue-500" />}
-                title="Who this user looks like to us"
-                content={selectedUser.narrative.whoThisUserIs}
-              />
-
-              <NarrativeSection
-                icon={<Eye size={20} className="text-purple-500" />}
-                title="What they did before ads"
-                content={selectedUser.narrative.beforeAds}
-              />
-
-              <NarrativeSection
-                icon={<MousePointer2 size={20} className="text-amber-500" />}
-                title="When ads start"
-                content={selectedUser.narrative.adExposure}
-              />
-
-              <NarrativeSection
-                icon={<ArrowRight size={20} className="text-cyan-500" />}
-                title="What happens after"
-                content={selectedUser.narrative.afterAds}
-              />
-
-              <NarrativeSection
-                icon={selectedUser.attribution.status === 'attributed'
-                  ? <CheckCircle2 size={20} className="text-emerald-500" />
-                  : <XCircle size={20} className="text-gray-400" />
-                }
-                title="How it's attributed"
-                content={selectedUser.narrative.howAttributed}
-                isLast={true}
-                highlight={true}
-                isAttributed={selectedUser.attribution.status === 'attributed'}
-              />
             </div>
           </div>
         )}
@@ -320,108 +272,77 @@ function NarrativeSection({
   content,
   isLast = false,
   highlight = false,
-  isAttributed = true
+  date,
+  colorClass
 }: {
   icon: React.ReactNode;
   title: string;
   content: string;
   isLast?: boolean;
   highlight?: boolean;
-  isAttributed?: boolean;
+  date?: string;
+  colorClass?: string;
 }) {
+  const getColorBg = (cls?: string) => {
+    if (!cls) return 'bg-gray-100 text-gray-500';
+    if (cls.includes('amber')) return 'bg-amber-500 text-white';
+    if (cls.includes('purple')) return 'bg-purple-500 text-white';
+    if (cls.includes('emerald')) return 'bg-emerald-500 text-white';
+    if (cls.includes('blue')) return 'bg-blue-500 text-white';
+    if (cls.includes('yellow')) return 'bg-yellow-500 text-white';
+    if (cls.includes('indigo')) return 'bg-indigo-500 text-white';
+    return 'bg-gray-500 text-white';
+  };
+
+  const iconBgStyle = getColorBg(colorClass);
+
   return (
-    <section className={`${!isLast ? 'mb-8 pb-8 border-b border-gray-100' : ''}`}>
-      <div className={`
-        rounded-xl p-6
-        ${highlight
-          ? isAttributed
-            ? 'bg-emerald-50 border border-emerald-100'
-            : 'bg-gray-50 border border-gray-200'
-          : ''
-        }
-      `}>
-        <div className="flex items-center gap-3 mb-3">
-          {icon}
-          <h4 className="font-semibold text-gray-900">{title}</h4>
+    <div className="flex gap-4 relative">
+      {/* Timeline Column */}
+      <div className="flex flex-col items-center">
+        {/* Icon Circle */}
+        <div className={`
+                  relative z-10 flex items-center justify-center w-8 h-8 rounded-full border-2 border-white shadow-md
+                  ${iconBgStyle}
+              `}>
+          <div className="scale-75">
+            {icon}
+          </div>
         </div>
-        <div className="text-gray-600 leading-relaxed whitespace-pre-line">
-          {content}
-        </div>
+        {/* Connecting Line */}
+        {!isLast && (
+          <div className="w-0.5 grow bg-gray-200 mt-1 mb-1" />
+        )}
       </div>
-    </section>
-  );
-}
 
-function Timeline({ events, isAttributed, attributionWindow }: {
-  events: UserProfile['timeline'];
-  isAttributed: boolean;
-  attributionWindow: string;
-}) {
-  const typeIcons: Record<string, React.ReactNode> = {
-    visit: <Eye size={14} className="text-gray-400" />,
-    impression: <Eye size={14} className="text-purple-500" />,
-    click: <MousePointer2 size={14} className="text-blue-500" />,
-    registration: <FileCheck size={14} className="text-cyan-500" />,
-    deposit: <Wallet size={14} className="text-emerald-500" />,
-    return: <ArrowRight size={14} className="text-amber-500" />,
-  };
-
-  const typeColors: Record<string, string> = {
-    visit: 'border-gray-200 bg-gray-50',
-    impression: 'border-purple-200 bg-purple-50',
-    click: 'border-blue-200 bg-blue-50',
-    registration: 'border-cyan-200 bg-cyan-50',
-    deposit: 'border-emerald-200 bg-emerald-50',
-    return: 'border-amber-200 bg-amber-50',
-  };
-
-  // Events that count as attributed (deposit, registration after ads)
-  const attributedEventTypes = ['deposit', 'registration'];
-  const windowDays = attributionWindow === '30d' ? 30 : 7;
-
-  return (
-    <div className="relative">
-      {events.map((event, idx) => {
-        const isAttributedEvent = isAttributed && attributedEventTypes.includes(event.type);
-
-        return (
-          <div key={idx} className="flex items-start gap-4 relative">
-            {/* Timeline line */}
-            <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full border-2 ${typeColors[event.type]} flex items-center justify-center z-10`}>
-                {typeIcons[event.type]}
-              </div>
-              {idx < events.length - 1 && (
-                <div className="w-0.5 h-10 bg-gray-200" />
-              )}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 pb-6">
-              <div className="flex items-baseline gap-3 mb-0.5">
-                <span className="text-sm font-mono text-gray-400">{event.date}</span>
-                <span className="text-xs text-gray-400 capitalize bg-gray-100 px-2 py-0.5 rounded">
-                  {event.type}
-                </span>
-              </div>
-              <p className="text-gray-700">{event.description}</p>
-              {event.source && (
-                <p className="text-xs text-gray-400 mt-0.5">via {event.source}</p>
-              )}
-
-              {/* Attribution Label */}
-              {isAttributedEvent && (
-                <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <CheckCircle2 size={14} className="text-emerald-600" />
-                  <span className="text-xs font-medium text-emerald-700">
-                    Event attributed to us — was within {windowDays} days window
-                  </span>
-                </div>
+      {/* Content Column */}
+      <div className="flex-1 pb-8">
+        <div className={`
+                  rounded-xl p-5 border transition-all duration-200 shadow-sm
+                  ${highlight
+            ? 'bg-gradient-to-br from-gray-50 to-white border-purple-200 shadow-md ring-1 ring-purple-50'
+            : 'bg-white border-gray-200 hover:shadow-md'
+          }
+              `}>
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h4 className="font-bold text-gray-900 text-base leading-tight">{title}</h4>
+              {date && (
+                <p className="text-xs text-gray-500 font-mono mt-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
+                  {date}
+                </p>
               )}
             </div>
           </div>
-        );
-      })}
+
+          <div className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">
+            {content}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+

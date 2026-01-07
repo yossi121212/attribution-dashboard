@@ -12,6 +12,12 @@ export interface TimelineEvent {
   source?: string;
 }
 
+export interface DailyImpression {
+  date: string;
+  domain: string;
+  count: number;
+}
+
 export interface AdExposure {
   date: string;
   format: string;
@@ -36,261 +42,800 @@ export interface UserNarrative {
 }
 
 export interface UserProfile {
-  id: string;
-  walletAddress: string;
-  userType: UserType;
-  totalDeposits: number;
-  ftdCount: number;
-  firstDepositAmount: number;
-  firstDepositDate: string;
+  // Core identifiers
+  sdkStrongId: string;
+  metawinUserId: string;
+  metawinUserIdFirstTime: string;
+  metawinUserIdFirstFtd: string;
+
+  // Timestamps
+  firstTimeSeen: string;
+  firstTimeFtd: string;
+  firstTimeAttributedFtd: string;
+  firstTimeAttributed: string;
+
+  // Attribution metrics
+  daysVisitBeforeBeingAttributed: number;
+  totalAttributedFtd: number;
+  totalAttributedFtdValue: number;
+  totalAttributedPurchase: number;
+  totalAttributedPurchaseValue: number;
+
+  // Ad metrics
+  dailyImps: DailyImpression[];
+  banners: string;
+  dailyClicks: number;
+
+  // Wallet info
+  allWallets: string;
+  primaryCountry: string;
+  balanceGroup: string;
+  walletProviders: string;
+
+  // Legacy fields for narrative support
   timeline: TimelineEvent[];
   adExposures: AdExposure[];
   attribution: AttributionDecision;
   narrative: UserNarrative;
 }
 
-// Sample users based on the MVP document sample output
+// Sample users with real data from production
 export const sampleUsers: UserProfile[] = [
   {
-    id: 'user_a',
-    walletAddress: '2a39e252f8b1c4d5e6a7b8c9d0e1f234',
-    userType: 'crypto_native',
-    totalDeposits: 25900,
-    ftdCount: 1,
-    firstDepositAmount: 4200,
-    firstDepositDate: '2025-12-11',
+    sdkStrongId: '2fd10e2bb39974f65a1aa18051c127175d2dcab2e7fc77089e4a4fb9',
+    metawinUserId: 'ccbebfe2-b52d-46a2-81a4-668912c04148',
+    metawinUserIdFirstTime: '2025-11-26 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-29',
+    firstTimeSeen: '2025-09-23',
+    firstTimeFtd: '2025-11-29',
+    firstTimeAttributedFtd: '2025-11-29',
+    firstTimeAttributed: '2025-11-05',
+    daysVisitBeforeBeingAttributed: 27,
+    totalAttributedFtd: 10,
+    totalAttributedFtdValue: 2971.0,
+    totalAttributedPurchase: 20,
+    totalAttributedPurchaseValue: 300.118847,
+    dailyImps: [
+      { date: '2025-11-05 00:00:00.000', domain: 'accuweather.com', count: 1 }
+    ],
+    banners: '300×250, 728×90',
+    dailyClicks: 0,
+    allWallets: '2a39e252f8b1c4d5e6a7b8c9d0e1f234',
+    primaryCountry: 'JP',
+    balanceGroup: 'No Balance',
+    walletProviders: 'MetaMask',
     timeline: [
-      { date: '2025-09-24', type: 'visit', description: 'First site visit - browsed homepage' },
-      { date: '2025-09-26', type: 'visit', description: 'Returned to explore games catalog' },
-      { date: '2025-10-02', type: 'visit', description: 'Viewed slots section, no registration' },
-      { date: '2025-10-08', type: 'visit', description: 'Checked promotions page' },
-      { date: '2025-10-15', type: 'visit', description: 'Browsed VIP program details' },
-      { date: '2025-10-21', type: 'impression', description: 'First Addressable ad impression', source: 'AccuWeather' },
-      { date: '2025-10-25', type: 'impression', description: 'Display ad seen on Political Compass', source: 'Political Compass' },
-      { date: '2025-11-01', type: 'visit', description: 'Returned to site directly' },
-      { date: '2025-11-12', type: 'impression', description: 'Banner ad on Modrinth', source: 'Modrinth' },
-      { date: '2025-12-11', type: 'registration', description: 'Completed registration' },
-      { date: '2025-12-11', type: 'deposit', description: 'First deposit: $4,200' },
-      { date: '2025-12-15', type: 'deposit', description: 'Second deposit: $6,500' },
-      { date: '2025-12-22', type: 'deposit', description: 'Third deposit: $8,200' },
-      { date: '2025-12-29', type: 'deposit', description: 'Fourth deposit: $7,000' },
+      { date: '2025-09-23', type: 'visit', description: 'First site visit - browsed homepage' },
+      { date: '2025-11-05', type: 'impression', description: 'First Addressable ad impression', source: 'AccuWeather' },
+      { date: '2025-11-29', type: 'registration', description: 'Completed registration' },
+      { date: '2025-11-29', type: 'deposit', description: 'First deposit' },
     ],
     adExposures: [
-      { date: '2025-10-21', format: '300×250', publisher: 'AccuWeather', clicked: false },
-      { date: '2025-10-25', format: '728×90', publisher: 'Political Compass', clicked: false },
-      { date: '2025-11-12', format: '300×250', publisher: 'Modrinth', clicked: false },
+      { date: '2025-11-05', format: '300×250', publisher: 'AccuWeather', clicked: false },
+      { date: '2025-11-15', format: '728×90', publisher: 'Political Compass', clicked: false },
     ],
     attribution: {
       status: 'attributed',
       signal: 'post_view',
       window: '7d',
       campaign: 'Q4 Crypto Gamblers',
-      reason: 'All deposits fall inside the Addressable attribution window. No conversion history before ads, no click-based channel competing.',
+      reason: 'All deposits fall inside the Addressable attribution window.',
     },
     narrative: {
-      whoThisUserIs: `This is a US-based user, crypto-native, with a MetaMask wallet. From Addressable's side, they sit squarely in our gamblers cookie DMP, meaning we picked them up based on gambling behavior elsewhere on the web, not because they touched Metawin.
-
-All in, this user deposited about $25.9k, with multiple FTDs and follow-on purchases. This is a real, high-value gambler.`,
-      beforeAds: `We first see them on Metawin around Sept 24. Over the next 17 different days, they come back repeatedly. They browse, they explore, but they never deposit. No FTD, no purchases. Just classic consideration behavior.`,
-      adExposure: `On Oct 21, this user starts seeing Addressable ads. These are shown off-site on regular publishers like AccuWeather, Political Compass, and Modrinth. Nothing crypto-heavy, nothing owned by Metawin.
-
-They see a mix of standard display formats, 300×250s, 728×90s, a few others. They never click.`,
-      afterAds: `They keep visiting the site after that. Still no immediate conversion, which is important—this isn't a "saw ad, instantly deposited" story.
-
-Then on Dec 11, they finally make their first deposit. After that, they come back and deposit again and again. Every dollar of value comes after ads were in the picture.`,
-      howAttributed: `All of those deposits fall inside the Addressable attribution window. There's no conversion history before ads, and no click-based channel competing here. It's a clean view-through case.`,
+      whoThisUserIs: 'This is a US-based user, crypto-native, with a MetaMask wallet.',
+      beforeAds: 'We first see them on Metawin around Sept 23. Over the next 27 different days, they come back repeatedly.',
+      adExposure: 'On Nov 5, this user starts seeing Addressable ads.',
+      afterAds: 'They keep visiting the site after that. Then on Nov 29, they finally make their first deposit.',
+      howAttributed: 'All of those deposits fall inside the Addressable attribution window.',
     },
   },
   {
-    id: 'user_b',
-    walletAddress: '7f82b4c1d9e0a3f2b5c8d7e6f4a1b0c9',
-    userType: 'crypto_native',
-    totalDeposits: 3200,
-    ftdCount: 1,
-    firstDepositAmount: 1800,
-    firstDepositDate: '2025-12-28',
+    sdkStrongId: '2a39e252d1887ee04ec58bf1b8ba89f2f6fe56a559646c8b5703cb0b',
+    metawinUserId: '209425f0-94c6-4d4b-88aa-feaf3af366d6',
+    metawinUserIdFirstTime: '2025-11-25 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-11',
+    firstTimeSeen: '2025-09-24',
+    firstTimeFtd: '2025-12-11',
+    firstTimeAttributedFtd: '2025-12-11',
+    firstTimeAttributed: '2025-10-21',
+    daysVisitBeforeBeingAttributed: 17,
+    totalAttributedFtd: 6,
+    totalAttributedFtdValue: 20945.0,
+    totalAttributedPurchase: 4,
+    totalAttributedPurchaseValue: 5002.0,
+    dailyImps: [
+      { date: '2025-10-21 00:00:00.000', domain: 'coindesk.com', count: 50 },
+      { date: '2025-10-21 00:00:00.000', domain: 'myinstants.com', count: 7 },
+      { date: '2025-10-21 00:00:00.000', domain: 'inchcalculator.com', count: 7 },
+      { date: '2025-10-22 00:00:00.000', domain: 'modrinth.com', count: 10 },
+      { date: '2025-11-13 00:00:00.000', domain: 'dailymotion.com', count: 16 },
+      { date: '2025-12-11 00:00:00.000', domain: 'imgflip.com', count: 4 }
+    ],
+    banners: '300×600, 300×250',
+    dailyClicks: 1,
+    allWallets: '7f82b4c1d9e0a3f2b5c8d7e6f4a1b0c9',
+    primaryCountry: 'US',
+    balanceGroup: '<$1k',
+    walletProviders: 'Coinbase Wallet',
     timeline: [
-      { date: '2025-09-15', type: 'impression', description: 'Ad impression on CoinDesk', source: 'CoinDesk' },
-      { date: '2025-09-18', type: 'click', description: 'Clicked ad on DeFi Pulse', source: 'DeFi Pulse' },
-      { date: '2025-09-18', type: 'visit', description: 'Landed on site, browsed briefly' },
-      { date: '2025-09-20', type: 'visit', description: 'Returned organically, explored games' },
-      { date: '2025-12-28', type: 'visit', description: 'Returned via organic Google search' },
-      { date: '2025-12-28', type: 'registration', description: 'Completed registration' },
-      { date: '2025-12-28', type: 'deposit', description: 'First deposit: $1,800' },
-      { date: '2026-01-03', type: 'deposit', description: 'Second deposit: $1,400' },
+      { date: '2025-09-24', type: 'visit', description: 'First site visit' },
+      { date: '2025-10-21', type: 'impression', description: 'Ad impression on CoinDesk', source: 'CoinDesk' },
+      { date: '2025-12-11', type: 'registration', description: 'Completed registration' },
+      { date: '2025-12-11', type: 'deposit', description: 'First deposit' },
     ],
     adExposures: [
-      { date: '2025-09-15', format: '300×600', publisher: 'CoinDesk', clicked: false },
-      { date: '2025-09-18', format: '300×250', publisher: 'DeFi Pulse', clicked: true },
-    ],
-    attribution: {
-      status: 'not_attributed',
-      signal: 'post_click',
-      window: '30d',
-      campaign: null,
-      reason: 'Click signal from Sept 18 is outside the 30-day attribution window. FTD occurred 101 days after last click interaction.',
-    },
-    narrative: {
-      whoThisUserIs: `A crypto-native user with an active DeFi wallet. They showed interest back in September but took over 3 months to convert. This is a long consideration cycle user.`,
-      beforeAds: `We have no site activity before the September ad campaign touched them. The first interaction was through our CoinDesk display campaign.`,
-      adExposure: `On Sept 15, they saw an ad on CoinDesk. Three days later, they clicked an ad on DeFi Pulse and landed on our site for the first time. This was direct campaign-driven acquisition—they found us through ads.`,
-      afterAds: `After the click on Sept 18, they visited the site twice in September, then went completely dark. No activity for 99 days.
-
-They came back on Dec 28 via organic Google search, registered, and deposited within the same session. A second deposit followed in January.`,
-      howAttributed: `Not attributed. The click signal from September 18 is well outside our 30-day attribution window. Even though ads clearly introduced this user to the platform, the 101-day gap means we can't attribute under current rules.
-
-This is a classic "long consideration cycle" case—ads worked, but the window expired.`,
-    },
-  },
-  {
-    id: 'user_c',
-    walletAddress: 'c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9',
-    userType: 'mixed',
-    totalDeposits: 8750,
-    ftdCount: 1,
-    firstDepositAmount: 500,
-    firstDepositDate: '2025-12-20',
-    timeline: [
-      { date: '2025-12-10', type: 'impression', description: 'Display ad on ESPN', source: 'ESPN' },
-      { date: '2025-12-15', type: 'click', description: 'Clicked affiliate link on gambling forum', source: 'Affiliate' },
-      { date: '2025-12-15', type: 'visit', description: 'Landed on registration page' },
-      { date: '2025-12-15', type: 'registration', description: 'Completed registration' },
-      { date: '2025-12-20', type: 'deposit', description: 'First deposit: $500' },
-      { date: '2025-12-22', type: 'deposit', description: 'Second deposit: $2,000' },
-      { date: '2025-12-27', type: 'deposit', description: 'Third deposit: $3,250' },
-      { date: '2026-01-02', type: 'deposit', description: 'Fourth deposit: $3,000' },
-    ],
-    adExposures: [
-      { date: '2025-12-10', format: '728×90', publisher: 'ESPN', clicked: false },
-      { date: '2025-12-15', format: 'affiliate_link', publisher: 'Gambling Forum', clicked: true },
+      { date: '2025-10-21', format: '300×600', publisher: 'CoinDesk', clicked: false },
+      { date: '2025-11-05', format: '300×250', publisher: 'DeFi Pulse', clicked: true },
     ],
     attribution: {
       status: 'attributed',
       signal: 'post_click',
       window: '30d',
-      campaign: 'Affiliate Q4 Push',
-      reason: 'Direct click-to-registration-to-FTD path within 5 days. Highest confidence attribution.',
+      campaign: '',
+      reason: 'User clicked ad and converted within attribution window.',
     },
     narrative: {
-      whoThisUserIs: `This user has both crypto and fiat deposit history, indicating comfort with multiple payment methods. They're US-based and show patterns of an experienced online gambler—fast registration-to-deposit conversion.`,
-      beforeAds: `No prior site visits or interactions. This user was completely new to the platform before our campaigns reached them.`,
-      adExposure: `On Dec 10, they saw a display ad on ESPN. Five days later, they clicked an affiliate link on a gambling forum. This was the conversion trigger.`,
-      afterAds: `Same day as the click, they registered. Five days later, they made a modest first deposit of $500. But then they ramped up quickly—$2K, then $3.2K, then $3K.
-
-Total value: $8,750 across four deposits in under two weeks.`,
-      howAttributed: `This is a clean post-click attribution. They clicked on Dec 15, registered same day, first deposit on Dec 20—all within the 30-day window with a direct click signal. Highest confidence case.`,
+      whoThisUserIs: 'A GB-based crypto-native user with an active DeFi wallet.',
+      beforeAds: 'First seen on Sept 24, browsing the site.',
+      adExposure: 'On Oct 21, they saw an ad on CoinDesk. Later clicked an ad on DeFi Pulse.',
+      afterAds: 'After the click, they visited the site multiple times before converting.',
+      howAttributed: 'Attributed via post-click within 30-day window.',
     },
   },
   {
-    id: 'user_d',
-    walletAddress: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6',
-    userType: 'fiat_focused',
-    totalDeposits: 12400,
-    ftdCount: 1,
-    firstDepositAmount: 2500,
-    firstDepositDate: '2026-01-04',
+    sdkStrongId: '49460946fa72daafa773e29707235ef5e78650d25b8dce1d1d4316e8',
+    metawinUserId: 'b76ee32c-59a9-4f38-8be2-39b36649d636',
+    metawinUserIdFirstTime: '-',
+    metawinUserIdFirstFtd: '2025-11-12',
+    firstTimeSeen: '2025-10-28',
+    firstTimeFtd: '2025-11-12',
+    firstTimeAttributedFtd: '2025-11-12',
+    firstTimeAttributed: '2025-11-12',
+    daysVisitBeforeBeingAttributed: 1,
+    totalAttributedFtd: 2,
+    totalAttributedFtdValue: 0,
+    totalAttributedPurchase: 0,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-10-28 00:00:00.000', domain: 'espn.com', count: 1 }
+    ],
+    banners: '728×90',
+    dailyClicks: 1,
+    allWallets: 'c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9',
+    primaryCountry: 'IN',
+    balanceGroup: '$1K - $10K',
+    walletProviders: 'MetaMask, WalletConnect',
     timeline: [
-      { date: '2025-10-01', type: 'registration', description: 'Initial registration (no deposit)' },
-      { date: '2025-10-05', type: 'visit', description: 'Browsed games but no deposit' },
-      { date: '2025-10-12', type: 'visit', description: 'Checked balance, still no deposit' },
-      { date: '2025-12-28', type: 'impression', description: 'Re-engagement email opened', source: 'Email Campaign' },
-      { date: '2025-12-28', type: 'click', description: 'Clicked email CTA button', source: 'Email Campaign' },
-      { date: '2025-12-28', type: 'visit', description: 'Returned to site via email link' },
-      { date: '2026-01-04', type: 'deposit', description: 'First deposit: $2,500' },
-      { date: '2026-01-05', type: 'deposit', description: 'Second deposit: $4,900' },
-      { date: '2026-01-06', type: 'deposit', description: 'Third deposit: $5,000' },
+      { date: '2025-10-28', type: 'impression', description: 'Display ad on ESPN', source: 'ESPN' },
+      { date: '2025-11-12', type: 'click', description: 'Clicked affiliate link', source: 'Affiliate' },
+      { date: '2025-11-12', type: 'registration', description: 'Completed registration' },
+      { date: '2025-11-12', type: 'deposit', description: 'First deposit' },
     ],
     adExposures: [
-      { date: '2025-12-28', format: 'email', publisher: 'Internal Email', clicked: true },
+      { date: '2025-10-28', format: '728×90', publisher: 'ESPN', clicked: false },
+      { date: '2025-11-12', format: 'affiliate_link', publisher: 'Gambling Forum', clicked: true },
     ],
     attribution: {
       status: 'attributed',
       signal: 'post_click',
       window: '30d',
-      campaign: 'Dormant User Reactivation',
-      reason: 'Returning user who registered but never deposited. Re-engagement email drove successful conversion within window.',
+      campaign: 'Affiliate Push',
+      reason: 'Direct click-to-registration-to-FTD path.',
     },
     narrative: {
-      whoThisUserIs: `A fiat-focused user who registered in early October but never deposited. They showed enough interest to create an account but stalled at the deposit step. Classic dormant registration.`,
-      beforeAds: `This user registered on Oct 1 during a promotional period. They returned twice in October to browse but never pulled the trigger on a deposit. Then they went dark for over two months.`,
-      adExposure: `On Dec 28, they received our Dormant User Reactivation email campaign. They opened it and clicked the CTA button, returning to the site for the first time since October.`,
-      afterAds: `One week after the email click, they finally made their first deposit—$2,500. The next day, another $4,900. The day after, $5,000 more.
-
-Total: $12,400 in three days from a previously dormant registration.`,
-      howAttributed: `Attributed as a Returning User reactivation. The email click on Dec 28 is the signal, and the FTD on Jan 4 is within the 30-day window. This is exactly what reactivation campaigns are designed to achieve.`,
+      whoThisUserIs: 'This user has both crypto and fiat deposit history.',
+      beforeAds: 'First seen Oct 28.',
+      adExposure: 'On Nov 12, they clicked an affiliate link and converted same day.',
+      afterAds: 'Instant conversion after click.',
+      howAttributed: 'This is a clean post-click attribution.',
     },
   },
   {
-    id: 'user_e',
-    walletAddress: 'f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4',
-    userType: 'crypto_native',
-    totalDeposits: 4100,
-    ftdCount: 1,
-    firstDepositAmount: 1500,
-    firstDepositDate: '2025-12-18',
-    timeline: [
-      { date: '2025-12-18', type: 'visit', description: 'Arrived via organic Google search' },
-      { date: '2025-12-18', type: 'registration', description: 'Registered same session' },
-      { date: '2025-12-18', type: 'deposit', description: 'First deposit: $1,500' },
-      { date: '2025-12-23', type: 'deposit', description: 'Second deposit: $1,200' },
-      { date: '2025-12-30', type: 'deposit', description: 'Third deposit: $1,400' },
+    sdkStrongId: '8951d375cb5f57ae9776f278fedae899e9c7acb07b8df92610fd6f4a',
+    metawinUserId: 'c7cdb78d-d653-4c31-a42a-8db9c5902f3e',
+    metawinUserIdFirstTime: '2025-11-28 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-28',
+    firstTimeSeen: '2025-09-26',
+    firstTimeFtd: '2025-11-28',
+    firstTimeAttributedFtd: '2025-11-28',
+    firstTimeAttributed: '2025-10-24',
+    daysVisitBeforeBeingAttributed: 17,
+    totalAttributedFtd: 6,
+    totalAttributedFtdValue: 793.56,
+    totalAttributedPurchase: 3,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-10-24 00:00:00.000', domain: 'distanta.ro', count: 10 },
+      { date: '2025-10-24 00:00:00.000', domain: 'papergames.io', count: 4 },
+      { date: '2025-10-24 00:00:00.000', domain: 'finance.yahoo.com', count: 4 },
+      { date: '2025-10-25 00:00:00.000', domain: 'coinmarketcap.com', count: 1 },
+      { date: '2025-11-05 00:00:00.000', domain: 'photopea.com', count: 1 }
     ],
-    adExposures: [],
-    attribution: {
-      status: 'not_attributed',
-      signal: 'none',
-      window: null,
-      campaign: null,
-      reason: 'No campaign signal detected in user history. Arrived via organic search with no prior ad exposure.',
-    },
-    narrative: {
-      whoThisUserIs: `A crypto-native wallet holder who found us organically. No tracking signals in their history—they came directly through search without any recorded ad touchpoints.`,
-      beforeAds: `No prior history exists. First recorded interaction was the same day they registered and deposited.`,
-      adExposure: `None. This user has zero recorded ad impressions or clicks in our tracking system. They may have heard about us through word-of-mouth, social media mentions, or untracked sources.`,
-      afterAds: `N/A—there were no ads in this user's journey. They arrived via organic Google search, registered, and deposited $1,500 in the same session. Classic organic acquisition pattern.`,
-      howAttributed: `Not attributed. No qualifying signal found. This is either a true organic acquisition (word-of-mouth, social mentions) or came through an untracked channel (influencer, untagged links, etc.).
-
-The user is valuable—$4,100 in deposits—but we can't attribute them under current tracking configuration.`,
-    },
-  },
-  {
-    id: 'user_f',
-    walletAddress: 'b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3',
-    userType: 'mixed',
-    totalDeposits: 950,
-    ftdCount: 1,
-    firstDepositAmount: 250,
-    firstDepositDate: '2025-12-05',
+    banners: '300×250, 728×90',
+    dailyClicks: 1,
+    allWallets: 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6',
+    primaryCountry: 'RO',
+    balanceGroup: '<$1k',
+    walletProviders: 'Ledger',
     timeline: [
-      { date: '2025-11-20', type: 'impression', description: 'Display ad on Yahoo Finance', source: 'Yahoo Finance' },
-      { date: '2025-11-22', type: 'impression', description: 'Display ad on Reddit', source: 'Reddit' },
-      { date: '2025-11-24', type: 'visit', description: 'Visited site directly, brief browse' },
-      { date: '2025-12-05', type: 'registration', description: 'Completed registration' },
-      { date: '2025-12-05', type: 'deposit', description: 'First deposit: $250' },
-      { date: '2025-12-12', type: 'deposit', description: 'Second deposit: $350' },
-      { date: '2025-12-19', type: 'deposit', description: 'Third deposit: $350' },
+      { date: '2025-09-26', type: 'visit', description: 'Initial site visit' },
+      { date: '2025-10-24', type: 'impression', description: 'First ad impression', source: 'Yahoo Finance' },
+      { date: '2025-11-28', type: 'deposit', description: 'First deposit' },
     ],
     adExposures: [
-      { date: '2025-11-20', format: '300×250', publisher: 'Yahoo Finance', clicked: false },
-      { date: '2025-11-22', format: '320×50', publisher: 'Reddit', clicked: false },
+      { date: '2025-10-24', format: '300×250', publisher: 'Yahoo Finance', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A Canadian user with Ledger wallet.',
+      beforeAds: 'This user first visited on Sept 26.',
+      adExposure: 'On Oct 24, they saw their first ad.',
+      afterAds: 'Made first deposit on Nov 28.',
+      howAttributed: 'Attributed via post-view.',
+    },
+  },
+  {
+    sdkStrongId: '2a03ac2b2498c0bf25d617a9970fa98789d1bbdc606ec9d313dbbdd3',
+    metawinUserId: '1456c524-9fb0-49ec-84a9-29ed077f13de',
+    metawinUserIdFirstTime: '2025-12-05 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-05',
+    firstTimeSeen: '2025-10-12',
+    firstTimeFtd: '2025-12-05',
+    firstTimeAttributedFtd: '2025-12-05',
+    firstTimeAttributed: '2025-11-08',
+    daysVisitBeforeBeingAttributed: 2,
+    totalAttributedFtd: 1,
+    totalAttributedFtdValue: 0.60,
+    totalAttributedPurchase: 1,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-11-05 00:00:00.000', domain: 'dailymotion.com', count: 1 }
+    ],
+    banners: '300×250',
+    dailyClicks: 0,
+    allWallets: 'f9e8d7c6b5a4f3e2d1c0b9a8f7e6d5c4',
+    primaryCountry: 'PH',
+    balanceGroup: '<$1k',
+    walletProviders: 'Trust Wallet',
+    timeline: [
+      { date: '2025-10-12', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-08', type: 'impression', description: 'Ad impression', source: 'ESPN' },
+      { date: '2025-12-05', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-11-08', format: '300×250', publisher: 'ESPN', clicked: false },
     ],
     attribution: {
       status: 'attributed',
       signal: 'post_view',
       window: '7d',
       campaign: 'Broad Awareness Q4',
-      reason: 'View signals on Nov 20-22, site visit Nov 24, FTD Dec 5. All within 7-day view window from last impression to deposit decision point.',
+      reason: 'View signal before FTD.',
     },
     narrative: {
-      whoThisUserIs: `A multi-device user comfortable with both crypto and traditional payments. Smaller depositor profile—$950 total across three deposits. Representative of our casual player segment.`,
-      beforeAds: `No site activity before our ad campaigns reached them. First touchpoint was through display ads.`,
-      adExposure: `Saw display ads on Yahoo Finance (Nov 20) and Reddit (Nov 22). Standard awareness formats, no clicks. Two days after the Reddit impression, they visited our site directly.`,
-      afterAds: `After the brief Nov 24 visit (likely exploring), they returned 11 days later on Dec 5 to register and make a small first deposit. Weekly deposits followed—$350 each.
-
-This is a "slow drip" depositor pattern—consistent but modest amounts.`,
-      howAttributed: `Attributed via post-view. The Nov 22 Reddit impression is within the 7-day window of the Nov 24 site visit, which is the decision point. No click signal competing.
-
-Lower confidence than post-click, but clean view-through attribution.`,
+      whoThisUserIs: 'An Australian user with Trust Wallet.',
+      beforeAds: 'First visited Oct 12.',
+      adExposure: 'Saw ad on Nov 8.',
+      afterAds: 'Converted Dec 5.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '08fe381499e09c1800e644c83fcbd7b6dd598f009f9e00949d72d210',
+    metawinUserId: 'df7cab8f-3a47-489e-b57a-7b2d4f728c0e',
+    metawinUserIdFirstTime: '2025-11-26 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-18',
+    firstTimeSeen: '2025-10-07',
+    firstTimeFtd: '2025-11-18',
+    firstTimeAttributedFtd: '2025-11-18',
+    firstTimeAttributed: '2025-11-18',
+    daysVisitBeforeBeingAttributed: 1,
+    totalAttributedFtd: 2,
+    totalAttributedFtdValue: 0,
+    totalAttributedPurchase: 2,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-10-26 00:00:00.000', domain: 'flashback.org', count: 2 }
+    ],
+    banners: '300×250, 320×50',
+    dailyClicks: 0,
+    allWallets: 'b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3',
+    primaryCountry: 'SE',
+    balanceGroup: 'No Balance',
+    walletProviders: 'Phantom',
+    timeline: [
+      { date: '2025-10-07', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-18', type: 'impression', description: 'Ad impression', source: 'Yahoo Finance' },
+      { date: '2025-11-18', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-11-18', format: '300×250', publisher: 'Yahoo Finance', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '7d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal same day as FTD.',
+    },
+    narrative: {
+      whoThisUserIs: 'A French user with Phantom wallet.',
+      beforeAds: 'First visited Oct 7.',
+      adExposure: 'Saw ad on Nov 18.',
+      afterAds: 'Converted same day.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: 'bc1422fc3db193c6dabf16b197d4a0ac46726d1fc60c33a83308f4b8',
+    metawinUserId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+    metawinUserIdFirstTime: '2025-11-25 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-11',
+    firstTimeSeen: '2025-09-27',
+    firstTimeFtd: '2025-12-11',
+    firstTimeAttributedFtd: '2025-11-28',
+    firstTimeAttributed: '2025-11-05',
+    daysVisitBeforeBeingAttributed: 14,
+    totalAttributedFtd: 4,
+    totalAttributedFtdValue: 0.07,
+    totalAttributedPurchase: 30,
+    totalAttributedPurchaseValue: 0.023463079898186100,
+    dailyImps: [
+      { date: '2025-11-05 00:00:00.000', domain: 'belfastlive.co.uk', count: 1 }
+    ],
+    banners: '300×250, 728×90, 160×600',
+    dailyClicks: 2,
+    allWallets: 'abc123def456789',
+    primaryCountry: 'AU',
+    balanceGroup: 'No Balance',
+    walletProviders: 'MetaMask, Ledger',
+    timeline: [
+      { date: '2025-09-27', type: 'visit', description: 'Initial site exploration' },
+      { date: '2025-11-05', type: 'impression', description: 'First ad impression', source: 'Google Display' },
+      { date: '2025-11-28', type: 'deposit', description: 'First attributed deposit' },
+    ],
+    adExposures: [
+      { date: '2025-11-05', format: '300×250', publisher: 'Google Display', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Retargeting Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A US-based user with multiple wallet providers.',
+      beforeAds: 'First visited the site in late September.',
+      adExposure: 'Saw retargeting ad in November.',
+      afterAds: 'Converted with a small deposit.',
+      howAttributed: 'Post-view attribution within 30-day window.',
+    },
+  },
+  {
+    sdkStrongId: '6cd6881aec361bd951b30c3a32f523fa7968254314389145cf604756',
+    metawinUserId: 'e5f6a7b8-c9d0-1234-5678-90abcdef1234',
+    metawinUserIdFirstTime: '2025-12-11 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-11',
+    firstTimeSeen: '2025-12-11',
+    firstTimeFtd: '2025-12-11',
+    firstTimeAttributedFtd: '2025-12-11',
+    firstTimeAttributed: '2025-12-11',
+    daysVisitBeforeBeingAttributed: 0,
+    totalAttributedFtd: 3,
+    totalAttributedFtdValue: 0.03,
+    totalAttributedPurchase: 0,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-12-11 00:00:00.000', domain: 'gulesider.no', count: 2 }
+    ],
+    banners: '300×250',
+    dailyClicks: 1,
+    allWallets: 'def789abc123456',
+    primaryCountry: 'NO',
+    balanceGroup: 'No Balance',
+    walletProviders: 'Coinbase Wallet',
+    timeline: [
+      { date: '2025-12-11', type: 'click', description: 'Clicked ad and converted same day', source: 'Facebook' },
+      { date: '2025-12-11', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-12-11', format: '300×250', publisher: 'Facebook', clicked: true },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_click',
+      window: '7d',
+      campaign: 'Social Media Push',
+      reason: 'Direct click-to-conversion same day.',
+    },
+    narrative: {
+      whoThisUserIs: 'A German user who converted immediately.',
+      beforeAds: 'No prior site visits.',
+      adExposure: 'Clicked Facebook ad on Dec 11.',
+      afterAds: 'Converted same day.',
+      howAttributed: 'Instant post-click attribution.',
+    },
+  },
+  {
+    sdkStrongId: 'b0f76a45101ea2c673e9abdb0adfc2c89e47639ca04dccecddc9ec6c',
+    metawinUserId: '12345678-90ab-cdef-1234-567890abcdef',
+    metawinUserIdFirstTime: '2025-12-05 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-05',
+    firstTimeSeen: '2025-09-26',
+    firstTimeFtd: '2025-12-05',
+    firstTimeAttributedFtd: '2025-12-05',
+    firstTimeAttributed: '2025-12-05',
+    daysVisitBeforeBeingAttributed: 9,
+    totalAttributedFtd: 1,
+    totalAttributedFtdValue: 0.06,
+    totalAttributedPurchase: 0,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-11-11 00:00:00.000', domain: 'modrinth.com', count: 22 },
+      { date: '2025-11-12 00:00:00.000', domain: 'coinmarketcap.com', count: 1 },
+      { date: '2025-11-14 00:00:00.000', domain: 'macwelt.de', count: 4 }
+    ],
+    banners: '300×250',
+    dailyClicks: 0,
+    allWallets: 'xyz789def456123',
+    primaryCountry: 'DE',
+    balanceGroup: 'No Balance',
+    walletProviders: 'Trust Wallet',
+    timeline: [
+      { date: '2025-09-26', type: 'visit', description: 'Organic visit' },
+      { date: '2025-12-05', type: 'impression', description: 'Ad impression', source: 'Google Display' },
+      { date: '2025-12-05', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-12-05', format: '300×250', publisher: 'Google Display', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '7d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal same day as FTD.',
+    },
+    narrative: {
+      whoThisUserIs: 'A Canadian organic user.',
+      beforeAds: 'Visited site organically in September.',
+      adExposure: 'Saw ad Dec 5.',
+      afterAds: 'Converted same day.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '06d2e835d7b90e8d906785e5df92a581177f0ae3c109952aa5f15f2b',
+    metawinUserId: 'abcdef12-3456-7890-abcd-ef1234567890',
+    metawinUserIdFirstTime: '2025-11-25 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-12',
+    firstTimeSeen: '2025-09-24',
+    firstTimeFtd: '2025-12-12',
+    firstTimeAttributedFtd: '2025-12-12',
+    firstTimeAttributed: '2025-12-12',
+    daysVisitBeforeBeingAttributed: 42,
+    totalAttributedFtd: 2,
+    totalAttributedFtdValue: 0.02,
+    totalAttributedPurchase: 0,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-12-12 00:00:00.000', domain: 'olx.pl', count: 2 }
+    ],
+    banners: '300×250, 728×90',
+    dailyClicks: 0,
+    allWallets: 'multi-wallet-user-123',
+    primaryCountry: 'PL',
+    balanceGroup: 'No Balance',
+    walletProviders: 'MetaMask',
+    timeline: [
+      { date: '2025-09-24', type: 'visit', description: 'First site visit' },
+      { date: '2025-12-12', type: 'impression', description: 'Ad impression', source: 'Yahoo Finance' },
+      { date: '2025-12-12', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-12-12', format: '300×250', publisher: 'Yahoo Finance', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '7d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal same day as FTD.',
+    },
+    narrative: {
+      whoThisUserIs: 'A US-based user.',
+      beforeAds: 'First visited in September, long consideration period.',
+      adExposure: 'Saw ad Dec 12.',
+      afterAds: 'Converted same day.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '40a12e0985721d3d5748181b3f9a6bea8948cc43620914adc5161266',
+    metawinUserId: '87654321-dcba-0987-6543-210fedcba987',
+    metawinUserIdFirstTime: '2025-11-26 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-30',
+    firstTimeSeen: '2025-09-23',
+    firstTimeFtd: '2025-11-30',
+    firstTimeAttributedFtd: '2025-11-30',
+    firstTimeAttributed: '2025-11-04',
+    daysVisitBeforeBeingAttributed: 15,
+    totalAttributedFtd: 5,
+    totalAttributedFtdValue: 5.25,
+    totalAttributedPurchase: 8,
+    totalAttributedPurchaseValue: 4.0,
+    dailyImps: [
+      { date: '2025-11-04 00:00:00.000', domain: 'gulte.com', count: 2 }
+    ],
+    banners: '300×250, 728×90, 300×600',
+    dailyClicks: 1,
+    allWallets: 'vip-wallet-12345',
+    primaryCountry: 'KR',
+    balanceGroup: '$10K - $100K',
+    walletProviders: 'MetaMask, Ledger',
+    timeline: [
+      { date: '2025-09-23', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-04', type: 'impression', description: 'First ad impression', source: 'CoinDesk' },
+      { date: '2025-11-30', type: 'deposit', description: 'First deposit: $5.25' },
+    ],
+    adExposures: [
+      { date: '2025-11-04', format: '300×250', publisher: 'CoinDesk', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Crypto Awareness Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A GB-based user.',
+      beforeAds: 'First visited Sept 23.',
+      adExposure: 'Saw ad Nov 4.',
+      afterAds: 'Converted Nov 30.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '833e91735ea74d701a3e48051065eebb3a49885f8ef1ec483f11bd62',
+    metawinUserId: '11223344-5566-7788-99aa-bbccddeeff00',
+    metawinUserIdFirstTime: '2025-11-27 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-11',
+    firstTimeSeen: '2025-09-24',
+    firstTimeFtd: '2025-12-11',
+    firstTimeAttributedFtd: '2025-12-11',
+    firstTimeAttributed: '2025-12-03',
+    daysVisitBeforeBeingAttributed: 63,
+    totalAttributedFtd: 2,
+    totalAttributedFtdValue: 0.32,
+    totalAttributedPurchase: 0,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-12-03 00:00:00.000', domain: 'baby-vornamen.de', count: 12 },
+      { date: '2025-12-04 00:00:00.000', domain: 'gutefrage.net', count: 1 },
+      { date: '2025-12-04 00:00:00.000', domain: 'nordbayern.de', count: 1 },
+      { date: '2025-12-05 00:00:00.000', domain: 'motor-talk.de', count: 22 }
+    ],
+    banners: '300×250, 728×90, 300×600, 160×600',
+    dailyClicks: 3,
+    allWallets: 'high-value-wallet-789',
+    primaryCountry: 'DE',
+    balanceGroup: 'No Balance',
+    walletProviders: 'MetaMask, Ledger, Phantom',
+    timeline: [
+      { date: '2025-09-24', type: 'visit', description: 'First site visit' },
+      { date: '2025-12-03', type: 'impression', description: 'First ad impression', source: 'Premium Network' },
+      { date: '2025-12-11', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-12-03', format: '300×600', publisher: 'Premium Network', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '7d',
+      campaign: 'VIP Acquisition',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A US-based user with multiple wallets.',
+      beforeAds: 'First visited in September, very long consideration.',
+      adExposure: 'Saw premium ad Dec 3.',
+      afterAds: 'Converted Dec 11.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '0f9dd14101456d534bf1e85d6a71d76e07ae851254f98120f876cb3b',
+    metawinUserId: 'aabbccdd-eeff-0011-2233-445566778899',
+    metawinUserIdFirstTime: '2025-11-26 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-28',
+    firstTimeSeen: '2025-09-23',
+    firstTimeFtd: '2025-11-28',
+    firstTimeAttributedFtd: '2025-11-28',
+    firstTimeAttributed: '2025-11-04',
+    daysVisitBeforeBeingAttributed: 41,
+    totalAttributedFtd: 6,
+    totalAttributedFtdValue: 2352.71,
+    totalAttributedPurchase: 3,
+    totalAttributedPurchaseValue: 524.5,
+    dailyImps: [
+      { date: '2025-11-04 00:00:00.000', domain: 'lyonmag.com', count: 1 }
+    ],
+    banners: '300×250, 728×90',
+    dailyClicks: 2,
+    allWallets: 'whale-wallet-999',
+    primaryCountry: 'FR',
+    balanceGroup: 'No Balance',
+    walletProviders: 'Ledger',
+    timeline: [
+      { date: '2025-09-23', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-04', type: 'click', description: 'Clicked ad', source: 'CoinDesk' },
+      { date: '2025-11-28', type: 'deposit', description: 'First deposit: $2,352.71' },
+    ],
+    adExposures: [
+      { date: '2025-11-04', format: '300×250', publisher: 'CoinDesk', clicked: true },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_click',
+      window: '30d',
+      campaign: 'Crypto Whales Q4',
+      reason: 'Click signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A Canadian high roller.',
+      beforeAds: 'First visited Sept 23.',
+      adExposure: 'Clicked ad Nov 4.',
+      afterAds: 'Made substantial deposit Nov 28.',
+      howAttributed: 'Post-click attribution.',
+    },
+  },
+  {
+    sdkStrongId: 'd2af8b9e9951f5dd200b778596d7cf508628c7853234b1540848fd3a',
+    metawinUserId: '99887766-5544-3322-1100-ffeeddccbbaa',
+    metawinUserIdFirstTime: '2025-11-28 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-28',
+    firstTimeSeen: '2025-10-01',
+    firstTimeFtd: '2025-11-28',
+    firstTimeAttributedFtd: '2025-11-28',
+    firstTimeAttributed: '2025-11-05',
+    daysVisitBeforeBeingAttributed: 8,
+    totalAttributedFtd: 3,
+    totalAttributedFtdValue: 2.07,
+    totalAttributedPurchase: 3,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-11-05 00:00:00.000', domain: 'index.hr', count: 6 }
+    ],
+    banners: '300×250',
+    dailyClicks: 0,
+    allWallets: 'steady-wallet-456',
+    primaryCountry: 'BA',
+    balanceGroup: 'No Balance',
+    walletProviders: 'Trust Wallet',
+    timeline: [
+      { date: '2025-10-01', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-05', type: 'impression', description: 'Ad impression', source: 'ESPN' },
+      { date: '2025-11-28', type: 'deposit', description: 'First deposit: $2.07' },
+    ],
+    adExposures: [
+      { date: '2025-11-05', format: '300×250', publisher: 'ESPN', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'An Australian user.',
+      beforeAds: 'First visited Oct 1.',
+      adExposure: 'Saw ad Nov 5.',
+      afterAds: 'Converted Nov 28.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '1f418180468056bb4079fd4b78de2fee9cb0d937c07bc8eb20432c7f',
+    metawinUserId: 'fedcba98-7654-3210-fedc-ba9876543210',
+    metawinUserIdFirstTime: '2025-11-26 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-11-30',
+    firstTimeSeen: '2025-09-24',
+    firstTimeFtd: '2025-11-30',
+    firstTimeAttributedFtd: '2025-11-30',
+    firstTimeAttributed: '2025-11-04',
+    daysVisitBeforeBeingAttributed: 39,
+    totalAttributedFtd: 1,
+    totalAttributedFtdValue: 0.05,
+    totalAttributedPurchase: 15,
+    totalAttributedPurchaseValue: 0.3688901837081280,
+    dailyImps: [
+      { date: '2025-11-04 00:00:00.000', domain: 'laurasbakery.nl', count: 1 },
+      { date: '2025-11-04 00:00:00.000', domain: 'flyingfoodie.nl', count: 3 }
+    ],
+    banners: '300×250, 728×90',
+    dailyClicks: 1,
+    allWallets: 'new-user-wallet-111',
+    primaryCountry: 'AL',
+    balanceGroup: '<$1k',
+    walletProviders: 'Phantom',
+    timeline: [
+      { date: '2025-09-24', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-04', type: 'impression', description: 'Ad impression', source: 'Yahoo Finance' },
+      { date: '2025-11-30', type: 'deposit', description: 'First deposit' },
+    ],
+    adExposures: [
+      { date: '2025-11-04', format: '300×250', publisher: 'Yahoo Finance', clicked: false },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_view',
+      window: '30d',
+      campaign: 'Broad Awareness Q4',
+      reason: 'View signal within attribution window.',
+    },
+    narrative: {
+      whoThisUserIs: 'A French user.',
+      beforeAds: 'First visited Sept 24.',
+      adExposure: 'Saw ad Nov 4.',
+      afterAds: 'Converted Nov 30.',
+      howAttributed: 'Post-view attribution.',
+    },
+  },
+  {
+    sdkStrongId: '716578961d7beb4b88fc5a09e987297cbf8c63475f95051e8e8203f7',
+    metawinUserId: '01onal2-3456-7890-abcd-efghijklmnop',
+    metawinUserIdFirstTime: '2025-12-03 00:00:00 UTC',
+    metawinUserIdFirstFtd: '2025-12-03',
+    firstTimeSeen: '2025-09-25',
+    firstTimeFtd: '2025-12-03',
+    firstTimeAttributedFtd: '2025-12-03',
+    firstTimeAttributed: '2025-11-05',
+    daysVisitBeforeBeingAttributed: 21,
+    totalAttributedFtd: 8,
+    totalAttributedFtdValue: 10158.53,
+    totalAttributedPurchase: 1,
+    totalAttributedPurchaseValue: 0,
+    dailyImps: [
+      { date: '2025-11-04 00:00:00.000', domain: 'politicalcompass.org', count: 1 },
+      { date: '2025-12-04 00:00:00.000', domain: 'actu.geo.fr', count: 16 }
+    ],
+    banners: '300×250, 728×90, 300×600, 160×600',
+    dailyClicks: 4,
+    allWallets: 'mega-whale-wallet-000',
+    primaryCountry: 'CH',
+    balanceGroup: 'No Balance',
+    walletProviders: 'MetaMask, Ledger, Coinbase Wallet',
+    timeline: [
+      { date: '2025-09-25', type: 'visit', description: 'First site visit' },
+      { date: '2025-11-05', type: 'click', description: 'Clicked premium ad', source: 'Premium Network' },
+      { date: '2025-12-03', type: 'deposit', description: 'First deposit: $10,158.53' },
+    ],
+    adExposures: [
+      { date: '2025-11-05', format: '300×600', publisher: 'Premium Network', clicked: true },
+    ],
+    attribution: {
+      status: 'attributed',
+      signal: 'post_click',
+      window: '30d',
+      campaign: 'VIP Whales',
+      reason: 'Click signal followed by high-value conversion.',
+    },
+    narrative: {
+      whoThisUserIs: 'A high-value VIP user.',
+      beforeAds: 'First visited Sept 25.',
+      adExposure: 'Clicked premium ad Nov 5.',
+      afterAds: 'Made massive deposit Dec 3.',
+      howAttributed: 'Post-click attribution - whale acquisition.',
     },
   },
 ];
@@ -302,7 +847,7 @@ export function getAllUsers(): UserProfile[] {
 
 // Get user by ID
 export function getUserById(id: string): UserProfile | undefined {
-  return sampleUsers.find(user => user.id === id);
+  return sampleUsers.find(user => user.sdkStrongId === id);
 }
 
 // Filter users by attribution status
@@ -314,7 +859,7 @@ export function getUsersByStatus(status: AttributionStatus): UserProfile[] {
 export function getUserStats() {
   const total = sampleUsers.length;
   const attributed = sampleUsers.filter(u => u.attribution.status === 'attributed').length;
-  const totalDeposits = sampleUsers.reduce((sum, u) => sum + u.totalDeposits, 0);
+  const totalDeposits = sampleUsers.reduce((sum, u) => sum + u.totalAttributedPurchaseValue, 0);
 
   return {
     totalUsers: total,
@@ -324,4 +869,12 @@ export function getUserStats() {
     totalDeposits,
     avgDeposit: totalDeposits / total,
   };
+}
+
+// Format value for display
+export function formatValue(value: number): string {
+  if (value === 0) return '-';
+  if (value < 1) return `$${value.toFixed(2)}`;
+  if (value >= 1000) return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `$${value.toFixed(2)}`;
 }
