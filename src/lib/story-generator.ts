@@ -43,16 +43,7 @@ export interface StorySection {
 export function generateUserStory(user: UserProfile): StorySection[] {
     const sections: StorySection[] = [];
 
-    // 1. First Seen
-    sections.push({
-        title: 'First Seen by Addressable',
-        icon: Eye,
-        colorClass: 'text-amber-600', // Yellow/Amber
-        date: formatDateToReadable(user.firstTimeSeen),
-        content: `User first detected by our pixel on ${formatDateToReadable(user.firstTimeSeen)}.`
-    });
-
-    // 2. Ad Exposure
+    // Ad Exposure
     // Group impressions by date, but split into separate cards when other events fall between them
     if (user.dailyImps && user.dailyImps.length > 0) {
         // Sort imps by date
@@ -162,13 +153,22 @@ export function generateUserStory(user: UserProfile): StorySection[] {
         });
     }
 
-    // 6. Post FTD Value
-    if (user.totalAttributedPurchase > 0) {
+    // 6. Post FTD Value - only show if there are additional deposits beyond FTD
+    const totalDeposits = user.totalAttributedFtd + user.totalAttributedPurchase;
+    const totalDepositsValue = user.totalAttributedFtdValue + user.totalAttributedPurchaseValue;
+
+    // Convert ETH to USD if value is small (under 10, likely ETH)
+    const ETH_TO_USD_RATE = 3400;
+    const displayValue = totalDepositsValue < 10
+        ? (totalDepositsValue * ETH_TO_USD_RATE).toFixed(2)
+        : totalDepositsValue.toFixed(2);
+
+    if (totalDeposits > 0) {
         sections.push({
             title: 'After the FTD - Ongoing Value',
             icon: TrendingUp,
             colorClass: 'text-indigo-500',
-            content: `Following the FTD, the user continues to engage:\n• ${user.totalAttributedPurchase} attributed purchases\n• Total Value: $${user.totalAttributedPurchaseValue.toFixed(2)}\n• High-value behavior pattern detected.`
+            content: `Following the FTD, the user continues to engage:\n• ${totalDeposits} deposits\n• **Total Value: $${displayValue}**\n\nHigh-value behavior pattern detected.`
         });
     }
 

@@ -32,6 +32,48 @@ function countryToFlag(countryCode: string): string {
   return String.fromCodePoint(...codePoints);
 }
 
+// Shorten wallet address to industry standard format (0x1234...5678)
+function shortenWalletAddress(address: string): string {
+  if (!address) return '';
+
+  // Handle multiple addresses separated by comma
+  const addresses = address.split(',').map(addr => addr.trim());
+
+  return addresses.map(addr => {
+    if (addr.length <= 10) return addr;
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  }).join(', ');
+}
+
+// Convert ETH value to USD (values under 10 are treated as ETH)
+// Using approximate ETH price - in production this would fetch live rates
+const ETH_TO_USD_RATE = 3400; // Approximate ETH price in USD
+
+function formatCryptoValue(value: number): string {
+  // If the value is less than 10, treat it as ETH and convert to USD
+  if (value < 10) {
+    const usdValue = value * ETH_TO_USD_RATE;
+    return `$${usdValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+  // Otherwise it's already in USD
+  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+// Format date to readable format (Nov 26, 2025)
+function formatDateDisplay(dateStr: string): string {
+  if (!dateStr || dateStr === '-') return 'N/A';
+  const cleanDate = dateStr.split(' ')[0];
+  const parts = cleanDate.split('-');
+  if (parts.length === 3) {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    const monthName = monthNames[month - 1] || parts[1];
+    return `${monthName} ${day}, ${parts[0]}`;
+  }
+  return dateStr;
+}
+
 // Get color classes for balance group
 function getBalanceGroupColor(balanceGroup: string): string {
   const colors: Record<string, string> = {
@@ -87,8 +129,61 @@ export default function ExplainableDashboard() {
     }
   };
 
+  // Password protection
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+
+  const handlePasswordSubmit = () => {
+    if (password === 'meta1212') {
+      setIsAuthenticated(true);
+      setPasswordError(false);
+    } else {
+      setPasswordError(true);
+    }
+  };
+
+  const handlePasswordKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handlePasswordSubmit();
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 relative">
+      {/* Password protection overlay */}
+      {!isAuthenticated && (
+        <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-lg flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 border border-gray-200">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-4">
+                <Sparkles size={28} className="text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-gray-900">Attribution Explainer</h1>
+              <p className="text-sm text-gray-500 mt-1">Enter password to continue</p>
+            </div>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handlePasswordKeyDown}
+              placeholder="Enter password"
+              className={`w-full px-4 py-3 border rounded-xl text-center text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${passwordError ? 'border-red-400 bg-red-50' : 'border-gray-200'
+                }`}
+            />
+            {passwordError && (
+              <p className="text-red-500 text-sm text-center mt-2">Incorrect password</p>
+            )}
+            <button
+              onClick={handlePasswordSubmit}
+              className="w-full mt-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors"
+            >
+              Enter
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Experimental Prototype Banner */}
       <div className="bg-gray-800 border-b border-gray-700">
         <div className="max-w-5xl mx-auto px-6 py-2 text-center">
@@ -206,7 +301,7 @@ export default function ExplainableDashboard() {
                         <div className="flex items-center gap-2 mt-1 group">
                           <Wallet size={14} className="text-gray-400" />
                           <code className="text-sm text-gray-500 font-mono">
-                            {selectedUser.allWallets}
+                            {shortenWalletAddress(selectedUser.allWallets)}
                           </code>
                           <button
                             onClick={() => {
@@ -225,18 +320,24 @@ export default function ExplainableDashboard() {
 
                       {/* Wallet Providers */}
                       <div className="flex items-center gap-2 mt-3">
-                        <div className="flex items-center gap-1">
-                          {selectedUser.walletProviders.split(',').map((provider, idx) => (
-                            <WalletIcon key={idx} provider={provider.trim()} className="w-5 h-5" />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-500">
-                          {selectedUser.walletProviders}
-                        </span>
+                        {selectedUser.walletProviders && selectedUser.walletProviders.trim() !== '' && (
+                          <>
+                            <div className="flex items-center gap-1">
+                              {selectedUser.walletProviders.split(',').map((provider, idx) => (
+                                <WalletIcon key={idx} provider={provider.trim()} className="w-5 h-5" />
+                              ))}
+                            </div>
+                            <span className="text-sm text-gray-500">
+                              {selectedUser.walletProviders}
+                            </span>
+                          </>
+                        )}
                         {/* Circle separator + Balance Group - only show if user has wallets */}
                         {selectedUser.allWallets && selectedUser.allWallets.trim() !== '' && (
                           <>
-                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                            {selectedUser.walletProviders && selectedUser.walletProviders.trim() !== '' && (
+                              <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                            )}
                             <span className="text-sm text-gray-500">
                               balance group: {selectedUser.balanceGroup}
                             </span>
@@ -269,23 +370,19 @@ export default function ExplainableDashboard() {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-4 gap-4">
-                <StatCard
-                  label="Total FTD Value"
-                  value={`$${selectedUser.totalAttributedFtdValue.toLocaleString()}`}
-                  highlight={true}
-                />
+              <div className="grid grid-cols-3 gap-4">
                 <DateStatCard
                   label="First FTD Date"
                   date={selectedUser.firstTimeFtd}
                 />
                 <StatCard
                   label="Total Deposits"
-                  value={`${selectedUser.totalAttributedFtd} deposits`}
+                  value={`${selectedUser.totalAttributedFtd + selectedUser.totalAttributedPurchase} deposits`}
                 />
                 <StatCard
-                  label="Total Deposit Value"
-                  value={`$${selectedUser.totalAttributedPurchaseValue.toLocaleString()}`}
+                  label="Total Deposits Value"
+                  value={formatCryptoValue(selectedUser.totalAttributedFtdValue + selectedUser.totalAttributedPurchaseValue)}
+                  highlight={true}
                 />
               </div>
             </div>
@@ -311,6 +408,68 @@ export default function ExplainableDashboard() {
                 ))}
               </div>
             </div>
+
+            {/* Summary Section */}
+            <div className="bg-white rounded-2xl card-shadow border border-gray-200 p-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <FileCheck size={20} className="text-blue-600" />
+                Summary
+              </h3>
+              <div className="prose prose-gray max-w-none">
+                <p className="text-gray-700 leading-relaxed text-base">
+                  This user is from <span className="font-semibold">{selectedUser.primaryCountry}</span> {countryToFlag(selectedUser.primaryCountry)}.
+                  {selectedUser.allWallets && selectedUser.allWallets.trim() !== '' && (
+                    <> They have a wallet and belong to the <span className="font-semibold">{selectedUser.balanceGroup}</span> balance group</>
+                  )}
+                  {selectedUser.walletProviders && selectedUser.walletProviders.trim() !== '' && (
+                    <> using <span className="font-semibold">{selectedUser.walletProviders}</span></>
+                  )}.
+                </p>
+
+                <p className="text-gray-700 leading-relaxed text-base mt-4">
+                  Their first deposit was made on <span className="font-semibold">{formatDateDisplay(selectedUser.firstTimeFtd)}</span>.
+                  In total, they made <span className="font-semibold text-gray-900">{selectedUser.totalAttributedFtd + selectedUser.totalAttributedPurchase} deposits</span> with
+                  a total value of <span className="font-bold text-emerald-600 text-lg">{formatCryptoValue(selectedUser.totalAttributedFtdValue + selectedUser.totalAttributedPurchaseValue)}</span>.
+                </p>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <h4 className="font-semibold text-gray-800 mb-3">Customer Journey</h4>
+                  <p className="text-gray-600 leading-relaxed">
+                    {(() => {
+                      const stories = generateUserStory(selectedUser);
+                      const adExposure = stories.find(s => s.title.includes('Ad Exposure Begins'));
+                      const continued = stories.filter(s => s.title.includes('Continued') || s.title.includes('Additional'));
+                      const userId = stories.find(s => s.title.includes('User ID'));
+                      const ftd = stories.find(s => s.title.includes('FTD'));
+                      const ongoing = stories.find(s => s.title.includes('Ongoing'));
+
+                      return (
+                        <>
+                          {adExposure && (
+                            <>The user first saw our ads on <span className="font-semibold text-gray-900">{adExposure.date}</span>. </>
+                          )}
+                          {continued.length > 0 && (
+                            <>They continued to see ads over the following days. </>
+                          )}
+                          {userId && (
+                            <>On <span className="font-semibold text-gray-900">{userId.date}</span>, we received their user ID from the advertiser. </>
+                          )}
+                          {ftd && (
+                            <>They made their first deposit on <span className="font-semibold text-gray-900">{ftd.date}</span>. </>
+                          )}
+                          {ongoing && (
+                            <>Since then, they have continued to engage with the platform. </>
+                          )}
+                          {selectedUser.totalAttributedFtdValue + selectedUser.totalAttributedPurchaseValue > 0 && (
+                            <>Their total attributed value is <span className="font-bold text-emerald-600 text-lg">{formatCryptoValue(selectedUser.totalAttributedFtdValue + selectedUser.totalAttributedPurchaseValue)}</span>.</>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -329,9 +488,9 @@ export default function ExplainableDashboard() {
 
 function StatCard({ label, value, highlight = false }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className={`rounded-xl p-4 ${highlight ? 'bg-gradient-to-br from-indigo-50 to-purple-50 border border-purple-100' : 'bg-gray-50'}`}>
-      <p className="text-xs text-gray-500 mb-1">{label}</p>
-      <p className={`text-lg font-semibold capitalize ${highlight ? 'text-purple-700' : 'text-gray-900'}`}>{value}</p>
+    <div className={`rounded-xl p-4 ${highlight ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}`}>
+      <p className={`text-xs mb-1 ${highlight ? 'text-emerald-600' : 'text-gray-500'}`}>{label}</p>
+      <p className={`text-lg font-semibold ${highlight ? 'text-emerald-700' : 'text-gray-900'}`}>{value}</p>
     </div>
   );
 }
@@ -470,8 +629,20 @@ function NarrativeSection({
         );
       }
 
+      // Check for bold text (**text**)
+      const parseBold = (text: string) => {
+        const parts = text.split(/(\*\*[^*]+\*\*)/g);
+        return parts.map((part, i) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            const boldText = part.slice(2, -2);
+            return <span key={i} className="font-bold text-emerald-600 text-base">{boldText}</span>;
+          }
+          return part;
+        });
+      };
+
       // Regular text line
-      return <div key={idx} className="py-0.5">{line}</div>;
+      return <div key={idx} className="py-0.5">{parseBold(line)}</div>;
     });
   };
 
